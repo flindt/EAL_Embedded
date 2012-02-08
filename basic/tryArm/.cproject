@@ -20,7 +20,7 @@
 				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.cross.arm.gnu.buildArtefactType.application" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.cross.arm.gnu.buildArtefactType.application" description="" id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.debug.128122497" name="Debug" parent="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.debug">
 					<folderInfo id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.debug.128122497." name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.toolchain.debug.378253860" name="ARM Linux GCC (Sourcery G++ Lite)" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.toolchain.debug">
-							<option id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.option.debugging.level.151242161" name="Debug level" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.option.debugging.level" value="org.eclipse.cdt.cross.arm.gnu.base.option.debugging.level.max" valueType="enumerated"/>
+							<option id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.option.debugging.level.151242161" name="Debug level" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.option.debugging.level" value="org.eclipse.cdt.cross.arm.gnu.base.option.debugging.level.none" valueType="enumerated"/>
 							<targetPlatform id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.platform.debug.1360793912" isAbstract="false" name="Linux Platform" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.platform.debug"/>
 							<builder buildPath="${workspace_loc:/tryArm/Debug}" id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.builder.debug.1372444258" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="ARM Sourcery Linux GNU Make builder" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.builder.debug"/>
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.assembler.debug.2110683198" name="ARM Sourcery Linux GCC Assembler" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.assembler.debug">
@@ -38,8 +38,11 @@
 							</tool>
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.c.linker.debug.1196498689" name="ARM Sourcery Linux GCC C Linker" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.c.linker.debug">
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs.1939597878" name="Libraries (-l)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="&quot;/home/pfl/sandbox/stellaris/stellaris-drivers/LuminaryMicro/arm-none-eabi-gcc/libdriver.a&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;/home/pfl/sandbox/stellaris/stellaris-drivers/LuminaryMicro/arm-none-eabi-gcc/libgr.a&quot;"/>
+									<listOptionValue builtIn="false" value="gr"/>
+									<listOptionValue builtIn="false" value="driver"/>
+								</option>
+								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths.133596308" name="Library search path (-L)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="../../../../../sandbox/stellaris/stellaris-drivers/LuminaryMicro/arm-none-eabi-gcc/"/>
 								</option>
 								<inputType id="org.eclipse.cdt.cross.arm.gnu.c.linker.input.1298625506" superClass="org.eclipse.cdt.cross.arm.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
