@@ -35,9 +35,10 @@ int main( void )
 				    // Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
 				    // enable the GPIO pin for digital function.
 				    //
-					GPIODirModeSet( GPIO_PORTF_BASE, (GPIO_PIN_0), GPIO_DIR_MODE_HW );
-					GPIOPadConfigSet( GPIO_PORTF_BASE, (GPIO_PIN_0), GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD );
 
+					GPIODirModeSet( GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT );
+					GPIOPadConfigSet( GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD );
+					GPIOPinWrite( GPIO_PORTF_BASE, GPIO_PIN_0, 1 );
 				    //
 				    // Loop forever.
 				    //
