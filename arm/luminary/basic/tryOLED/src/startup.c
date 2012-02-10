@@ -41,13 +41,7 @@ static void IntDefaultHandler(void);
 //
 //*****************************************************************************
 extern int main(void);
-extern void xPortPendSVHandler(void);
-extern void xPortSysTickHandler(void);
-extern void vPortSVCHandler( void );
 extern void Timer0IntHandler( void );
-extern void vT2InterruptHandler( void );
-extern void vT3InterruptHandler( void );
-extern void vEMAC_ISR(void);
 
 //*****************************************************************************
 //
