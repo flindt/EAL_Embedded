@@ -14,12 +14,13 @@ http://www.codesourcery.com/sgpp/lite/arm/portal/release1802
 Use the archive on a linux system - not the installer.
 Extract it, and add the "../bin/" path to the PATH env variable
 
-
-
 4. download and install StellarisWare
 http://www.ti.com/tool/sw-lm3s
 You will have to register with TI first.
 
+5. Setup the libray search path to look in the stellarisware 
+../stellarisware/driverlib/gcc-cm3
+../stellarisware/grlib/gcc-cm3
 
 
 
