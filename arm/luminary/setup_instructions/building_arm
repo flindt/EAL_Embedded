@@ -1,0 +1,21 @@
+This file describes how to install and setup the 
+tools nescessary to build an ARM project for the 
+Luminary evalutaion kits using eclipse.
+
+
+
+1. eclipse indigo C/C++
+
+2. install the gnuarm eclipse plugin 
+http://gnuarmeclipse.sourceforge.net/updates
+
+3. install the 
+
+
+
+----------------------------------------------------------
+
+Common error messages:
+
+Nothing to build for project tryOLED
+====================================> Missing ARM plugin
