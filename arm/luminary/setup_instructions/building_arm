@@ -9,7 +9,22 @@ Luminary evalutaion kits using eclipse.
 2. install the gnuarm eclipse plugin 
 http://gnuarmeclipse.sourceforge.net/updates
 
-3. install the 
+3. install the toolchain from TI Called "Sourcery G++ Lite 2011.03-42 for ARM EABI"
+http://www.codesourcery.com/sgpp/lite/arm/portal/release1802
+Use the archive on a linux system - not the installer.
+Extract it, and add the "../bin/" path to the PATH env variable
+
+
+
+4. download and install StellarisWare
+http://www.ti.com/tool/sw-lm3s
+You will have to register with TI first.
+
+
+
+
+
+
 
 
 
@@ -19,3 +34,14 @@ Common error messages:
 
 Nothing to build for project tryOLED
 ====================================> Missing ARM plugin
+
+/bin/sh: arm-none-eabi-gcc: not found
+====================================> Toolchain not installed correctly
+									Check the PATH env variable
+									
+../bin/ld: cannot find -ldriver
+collect2: ld returned 1 exit status
+====================================> The drivers are missing
+									Check the library search path for the linker
+									
+									
