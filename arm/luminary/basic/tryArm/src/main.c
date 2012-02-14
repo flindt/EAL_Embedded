@@ -9,7 +9,6 @@
 #include <hw_types.h>
 #include <hw_sysctl.h>
 #include <gpio.h>
-#include <grlib.h>
 #include <sysctl.h>
 
 int main( void )
