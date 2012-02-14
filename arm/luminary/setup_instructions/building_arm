@@ -20,7 +20,8 @@ You will have to register with TI first.
 
 5. Setup the libray search path to look in the stellarisware 
 ../stellarisware/driverlib/gcc-cm3
-../stellarisware/grlib/gcc-cm3
+
+
 
 
 
