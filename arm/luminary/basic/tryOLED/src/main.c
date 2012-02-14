@@ -13,7 +13,6 @@
 #include "hw_sysctl.h"
 #include "sysctl.h"
 #include "gpio.h"
-#include "grlib.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
