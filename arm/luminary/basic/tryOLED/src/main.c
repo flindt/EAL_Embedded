@@ -22,71 +22,60 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
-
-int main(void)
-{
+int main(void) {
 	volatile unsigned long ulLoop;
 
-	SysCtlClockSet( SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ );
+	SysCtlClockSet(
+			SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
+					| SYSCTL_XTAL_8MHZ);
 
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
+	for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
+	}
 
-	SysCtlPeripheralEnable( SYSCTL_PERIPH_GPIOF );
+	//
+	// Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
+	// enable the GPIO pin for digital function.
+	//
 
-					    //
-					    // Do a dummy read to insert a few cycles after enabling the peripheral.
-					    //
+	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
+			GPIO_PIN_TYPE_STD);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+
+	// Start the OLED display and wirte a message on it
+
+	RIT128x96x4Init(ulSSI_FREQUENCY);
+	RIT128x96x4StringDraw("Hello Out there :)", 0, 0, mainFULL_SCALE);
+
+	//
+	// Loop forever.
+	//
+	while (1) {
 		//
-						        // Delay for a bit.
-						        //
-						        for(ulLoop = 0; ulLoop < 2000; ulLoop++)
-						        {
-						        }
+		// Turn on the LED.
+		//
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+		// GPIO_PORTF_DATA_R |= 0x01;
 
-					    //
-					    // Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
-					    // enable the GPIO pin for digital function.
-					    //
+		//
+		// Delay for a bit.
+		//
+		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
+		}
 
-						GPIODirModeSet( GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT );
-						GPIOPadConfigSet( GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD );
-						GPIOPinWrite( GPIO_PORTF_BASE, GPIO_PIN_0, 1 );
+		//
+		// Turn off the LED.
+		//
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
 
-
-
-						RIT128x96x4Init(ulSSI_FREQUENCY);
-						RIT128x96x4StringDraw("Hello Out there :)", 0, 0, mainFULL_SCALE);
-
-						//
-					    // Loop forever.
-					    //
-					    while(1)
-					    {
-					        //
-					        // Turn on the LED.
-					        //
-					    	GPIOPinWrite( GPIO_PORTF_BASE, GPIO_PIN_0,  GPIO_PIN_0);
-					        // GPIO_PORTF_DATA_R |= 0x01;
-
-					        //
-					        // Delay for a bit.
-					        //
-					        for(ulLoop = 0; ulLoop < 200000; ulLoop++)
-					        {
-					        }
-
-					        //
-					        // Turn off the LED.
-					        //
-					        GPIOPinWrite( GPIO_PORTF_BASE, GPIO_PIN_0,  0);
-
-					        //
-					        // Delay for a bit.
-					        //
-					        for(ulLoop = 0; ulLoop < 200000; ulLoop++)
-					        {
-					        }
-					    }
+		//
+		// Delay for a bit.
+		//
+		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
+		}
+	}
 
 	return 0;
 }
