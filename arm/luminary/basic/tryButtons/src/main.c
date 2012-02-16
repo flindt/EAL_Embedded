@@ -48,7 +48,13 @@ int main(void) {
 	// Start the OLED display and wirte a message on it
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
-	RIT128x96x4StringDraw("Hello Out there :)", 0, 0, mainFULL_SCALE);
+	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
+	RIT128x96x4StringDraw("Press the ""select"" key..", 0, 5, mainFULL_SCALE);
+
+	// Wait for the select key to be pressed
+	GPIODirModeSet( GPIO_PORTF_BASE, GPIO_PIN_1,GPIO_DIR_MODE_IN );
+
+	while( GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1));
 
 	//
 	// Loop forever.
