@@ -22,20 +22,17 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
-
 void
 initHW(void);
 
-
+// With this setup it would seem like main() must be the first function in this file, otherwise
+// the the wrong function gets called on reset.
 int
 main(void)
 {
   volatile unsigned long ulLoop;
 
   initHW();
-
-
-
 
   // Start the OLED display and write a message on it
 
@@ -47,16 +44,15 @@ main(void)
   while (GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1))
     ;
   // Wait for the select key to be pressed
-    while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0))
-      ;// Wait for the select key to be pressed
-    while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1))
-      ;// Wait for the select key to be pressed
-    while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_2))
-      ;
-    // Wait for the select key to be pressed
-      while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3))
-        ;
-
+  while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0))
+    ; // Wait for the select key to be pressed
+  while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1))
+    ; // Wait for the select key to be pressed
+  while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_2))
+    ;
+  // Wait for the select key to be pressed
+  while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3))
+    ;
 
   //
   // Loop forever.
@@ -97,40 +93,41 @@ initHW(void)
 {
   volatile unsigned long ulLoop;
 
-    //initHW();
+  //initHW();
 
+  SysCtlClockSet(
+      SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-    SysCtlClockSet(
-          SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+  // Enable the ports
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-      // Enable the ports
-      SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-      SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+  // Inputs :
+  // PE0 : Up button
+  // PE1 : Down button
+  // PE2 : Left button
+  // PE3 : Right button
+  // PF1 : Select button
+  //
+  GPIODirModeSet(GPIO_PORTE_BASE,
+      GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_IN);
+  GPIOPadConfigSet(GPIO_PORTE_BASE,
+      GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD_WPU);
 
-      // Inputs :
-      // PE0 : Up button
-      // PE1 : Down button
-      // PE2 : Left button
-      // PE3 : Right button
-      // PF1 : Select button
-      //
-      GPIODirModeSet(GPIO_PORTE_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_DIR_MODE_IN);
-      GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, GPIO_STRENGTH_2MA,
-              GPIO_PIN_TYPE_STD_WPU);
+  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
+  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD_WPU);
 
-      GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
-      GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA,
-          GPIO_PIN_TYPE_STD_WPU);
+  // Outputs:
+  // PF0 : Status LED
+  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
+  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD);
+  GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
-      // Outputs:
-      // PF0 : Status LED
-      GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
-      GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
-          GPIO_PIN_TYPE_STD);
-      GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
-
-      // a short delay to ensure stable IO before running the rest of the program
-      for (ulLoop = 0; ulLoop < 200; ulLoop++)
-        {
-        }
+  // a short delay to ensure stable IO before running the rest of the program
+  for (ulLoop = 0; ulLoop < 200; ulLoop++)
+    {
+    }
 }
