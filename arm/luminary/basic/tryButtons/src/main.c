@@ -31,19 +31,22 @@ int main(void) {
 					| SYSCTL_XTAL_8MHZ);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	GPIODirModeSet( GPIO_PORTF_BASE, GPIO_PIN_1,GPIO_DIR_MODE_IN );
+	GPIOPadConfigSet( GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU );
 
-	for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
+	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
+				GPIO_PIN_TYPE_STD);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+
+
+	for (ulLoop = 0; ulLoop < 200; ulLoop++) {
 	}
 
 	//
 	// Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
 	// enable the GPIO pin for digital function.
 	//
-
-	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
-	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
-			GPIO_PIN_TYPE_STD);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
 	// Start the OLED display and wirte a message on it
 
@@ -52,9 +55,10 @@ int main(void) {
 	RIT128x96x4StringDraw("Press the ""select"" key..", 0, 5, mainFULL_SCALE);
 
 	// Wait for the select key to be pressed
-	GPIODirModeSet( GPIO_PORTF_BASE, GPIO_PIN_1,GPIO_DIR_MODE_IN );
+	//GPIOPinTypeGPIOInput(GPIO_PORTF_BASE, GPIO_PIN_1);
 
-	while( GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1));
+
+	while( GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1) );
 
 	//
 	// Loop forever.
