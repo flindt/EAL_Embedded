@@ -29,6 +29,9 @@ const int KEY_PRESS_MINIMUM = 7;
 void
 initHW(void);
 
+// Theese enums are used as events, and for passing the matching bit for a certain key
+// from ReadKeys to GetKeyEvents.
+// NO_EVENT must be last.
 enum KeyEvents
 {
   KEY_ENTER, KEY_CANCEL, KEY_UP, KEY_DOWN, NO_EVENT
@@ -74,6 +77,7 @@ main(void)
   while (1)
     {
 
+      // This is where a statemachine could be added
       event = GetKeyEvents();
       if (event == KEY_ENTER)
         RIT128x96x4StringDraw("Enter Pressed", 0, 0, mainFULL_SCALE);
@@ -91,7 +95,7 @@ main(void)
 
       //
       // Delay for a bit.
-      //
+      // This is BAD STYLE (tm) any embedded system should be either free-running or timer based
       for (ulLoop = 0; ulLoop < 200000; ulLoop++)
         {
         }
@@ -112,7 +116,9 @@ main(void)
   return 0;
 }
 
-// This function translates a set of bits read from the key IO ports into key events
+// This function translates a set of bits read from the key IO ports into key events.
+// Adding more keys is a matter of adding a new enum value, and one reading
+// one more port in ReadKeys()
 int
 GetKeyEvents(void)
 {
