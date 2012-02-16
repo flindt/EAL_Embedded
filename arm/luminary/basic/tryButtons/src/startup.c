@@ -35,13 +35,13 @@ static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
 
+
 //*****************************************************************************
 //
 // The entry point for the application.
 //
 //*****************************************************************************
 extern int main(void);
-extern void Timer0IntHandler( void );
 
 //*****************************************************************************
 //
