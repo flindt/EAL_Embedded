@@ -22,15 +22,29 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
+// Stuff for the Key interface
+const int KEY_PRESS_MINIMUM = 7;
+
+// Function prototypes
 void
 initHW(void);
 
+enum KeyEvents
+{
+  KEY_ENTER, KEY_CANCEL, KEY_UP, KEY_DOWN, NO_EVENT
+};
+int
+ReadKeys(void);
+int
+GetKeyEvents(void);
+
 // With this setup it would seem like main() must be the first function in this file, otherwise
-// the the wrong function gets called on reset.
+// the wrong function gets called on reset.
 int
 main(void)
 {
   volatile unsigned long ulLoop;
+  volatile int event;
 
   initHW();
 
@@ -59,6 +73,16 @@ main(void)
   //
   while (1)
     {
+
+      event = GetKeyEvents();
+      if (event == KEY_ENTER)
+        RIT128x96x4StringDraw("Enter Pressed", 0, 0, mainFULL_SCALE);
+      if (event == KEY_UP)
+        RIT128x96x4StringDraw("up Pressed", 0, 0, mainFULL_SCALE);
+      if (event == KEY_DOWN)
+        RIT128x96x4StringDraw("down Pressed", 0, 0, mainFULL_SCALE);
+      if (event == KEY_CANCEL)
+        RIT128x96x4StringDraw("cancel Pressed", 0, 0, mainFULL_SCALE);
       //
       // Turn on the LED.
       //
@@ -86,6 +110,54 @@ main(void)
     }
 
   return 0;
+}
+
+// This function translates a set of bits read from the key IO ports into key events
+int
+GetKeyEvents(void)
+{
+  static int Count[NO_EVENT] =
+    { 0, 0, 0, 0, 0 };
+  int LoopCount;
+  int RawKeys;
+
+  RawKeys = ReadKeys();
+
+  for (LoopCount = 0; LoopCount < NO_EVENT; LoopCount++)
+    {
+      if (RawKeys & 1 << LoopCount)
+        {
+          Count[LoopCount]++;
+          if (Count[LoopCount] >= KEY_PRESS_MINIMUM)
+            {
+              Count[LoopCount] = 0;
+              return LoopCount;
+            }
+        }
+      else
+        Count[LoopCount] = 0;
+
+    }
+
+  return NO_EVENT;
+}
+
+// This function will read the actual io  ports associated with each key
+// This is the only function besides initHW, that will ever need to know
+// where each button is connected
+int
+ReadKeys(void)
+{
+  int KeyBits = 0;
+  if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0))
+    KeyBits |= 1 << KEY_UP;
+  if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1))
+    KeyBits |= 1 << KEY_DOWN;
+  if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_2))
+    KeyBits |= 1 << KEY_CANCEL;
+  if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3))
+    KeyBits |= 1 << KEY_ENTER;
+  return KeyBits;
 }
 
 void
