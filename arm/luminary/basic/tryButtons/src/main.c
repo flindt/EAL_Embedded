@@ -29,6 +29,7 @@ const int KEY_PRESS_MINIMUM = 7;
 void
 initHW(void);
 
+//
 // Theese enums are used as events, and for passing the matching bit for a certain key
 // from ReadKeys to GetKeyEvents.
 // NO_EVENT must be last.
@@ -87,6 +88,10 @@ main(void)
         RIT128x96x4StringDraw("down Pressed", 0, 0, mainFULL_SCALE);
       if (event == KEY_CANCEL)
         RIT128x96x4StringDraw("cancel Pressed", 0, 0, mainFULL_SCALE);
+
+
+
+
       //
       // Turn on the LED.
       //
@@ -122,6 +127,7 @@ main(void)
 int
 GetKeyEvents(void)
 {
+  static int KeyPressFlag = 0;
   static int Count[NO_EVENT] =
     { 0, 0, 0, 0, 0 };
   int LoopCount;
@@ -131,17 +137,22 @@ GetKeyEvents(void)
 
   for (LoopCount = 0; LoopCount < NO_EVENT; LoopCount++)
     {
-      if (RawKeys & 1 << LoopCount)
+      if (RawKeys & (1 << LoopCount))
         {
           Count[LoopCount]++;
-          if (Count[LoopCount] >= KEY_PRESS_MINIMUM)
+          if (( Count[LoopCount] >= KEY_PRESS_MINIMUM) && !(KeyPressFlag & (1<<LoopCount)))
             {
+              KeyPressFlag |=  (1<<LoopCount);
               Count[LoopCount] = 0;
               return LoopCount;
             }
         }
       else
-        Count[LoopCount] = 0;
+        {
+          KeyPressFlag &=  ~(1<<LoopCount);
+          Count[LoopCount] = 0;
+        }
+
 
     }
 
