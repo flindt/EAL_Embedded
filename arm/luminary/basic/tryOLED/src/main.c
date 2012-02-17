@@ -44,7 +44,7 @@ int main(void) {
 			GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
-	// Start the OLED display and wirte a message on it
+	// Start the OLED display and write a message on it
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Hello Out there :)", 0, 0, mainFULL_SCALE);
