@@ -15,7 +15,7 @@
 #include "gpio.h"
 #include <systick.h>
 
-#include "externalFunctions/itoa.h"
+#include "../externalFunctions/itoa.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -27,7 +27,7 @@
 
 int main(void) {
 	volatile unsigned long ulLoop;
-	char buffer[32] = "";
+	char buffer[32] = "123";
 
 
 	SysCtlClockSet(
@@ -49,7 +49,7 @@ int main(void) {
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
 	// Enable the system tick
-	SysTickPeriodSet(1000);
+	SysTickPeriodSet(10000);
 	SysTickEnable();
 
 for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
@@ -75,7 +75,8 @@ for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
 		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
 		}
 
-		itoa(SysTickPeriodGet(), buffer, 10 );
+		itoa((int)SysTickValueGet(), buffer, 10 );
+		//itoa(277, buffer, 10 );
 		RIT128x96x4StringDraw(buffer, 0, 10, mainFULL_SCALE);
 
 		//
