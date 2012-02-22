@@ -13,6 +13,9 @@
 #include "hw_sysctl.h"
 #include "sysctl.h"
 #include "gpio.h"
+#include <systick.h>
+
+#include "externalFunctions/itoa.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -24,6 +27,8 @@
 
 int main(void) {
 	volatile unsigned long ulLoop;
+	char buffer[32] = "";
+
 
 	SysCtlClockSet(
 			SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
@@ -31,8 +36,7 @@ int main(void) {
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-	for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
-	}
+
 
 	//
 	// Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
@@ -44,6 +48,12 @@ int main(void) {
 			GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
+	// Enable the system tick
+	SysTickPeriodSet(1000);
+	SysTickEnable();
+
+for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
+	}
 	// Start the OLED display and write a message on it
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
@@ -64,6 +74,9 @@ int main(void) {
 		//
 		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
 		}
+
+		itoa(SysTickPeriodGet(), buffer, 10 );
+		RIT128x96x4StringDraw(buffer, 0, 10, mainFULL_SCALE);
 
 		//
 		// Turn off the LED.
