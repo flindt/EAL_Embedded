@@ -25,35 +25,19 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
+// Function prototypes
+void
+initHW(void);
+
+
+
 int main(void) {
 	volatile unsigned long ulLoop;
 	char buffer[32] = "123";
 
+	// Setup the ports and other hardware
+	initHW();
 
-	SysCtlClockSet(
-			SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
-					| SYSCTL_XTAL_8MHZ);
-
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-
-
-
-	//
-	// Enable the GPIO pin for the LED (PF0).  Set the direction as output, and
-	// enable the GPIO pin for digital function.
-	//
-
-	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
-	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
-			GPIO_PIN_TYPE_STD);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
-
-	// Enable the system tick
-	SysTickPeriodSet(10000);
-	SysTickEnable();
-
-for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
-	}
 	// Start the OLED display and write a message on it
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
@@ -92,4 +76,57 @@ for (ulLoop = 0; ulLoop < 2000; ulLoop++) {
 	}
 
 	return 0;
+}
+
+
+void
+initHW(void)
+{
+  volatile unsigned long ulLoop;
+
+  //initHW();
+
+  SysCtlClockSet(
+      SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+
+  // Enable the system tick
+          SysTickPeriodSet(10000);
+          SysTickEnable();
+
+
+  // Enable the ports
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+  // Inputs :
+  // PE0 : Up button
+  // PE1 : Down button
+  // PE2 : Left button
+  // PE3 : Right button
+  // PF1 : Select button
+  //
+  GPIODirModeSet(GPIO_PORTE_BASE,
+      GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_IN);
+  GPIOPadConfigSet(GPIO_PORTE_BASE,
+      GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD_WPU);
+
+  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
+  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD_WPU);
+
+  // Outputs:
+  // PF0 : Status LED
+  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
+  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
+      GPIO_PIN_TYPE_STD);
+  GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+
+
+
+
+  // a short delay to ensure stable IO before running the rest of the program
+  for (ulLoop = 0; ulLoop < 200; ulLoop++)
+    {
+    }
 }
