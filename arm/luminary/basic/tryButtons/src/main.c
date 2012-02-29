@@ -14,6 +14,7 @@
 #include "sysctl.h"
 #include "gpio.h"
 
+
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
 #define mainMAX_ROWS_128					( mainCHARACTER_HEIGHT * 14 )
