@@ -4,12 +4,14 @@
  *  Created on: Feb 8, 2012
  *      Author: pfl
  */
-#include <stdio.h>
+
 #include <hw_memmap.h>
 #include <hw_types.h>
 #include <hw_sysctl.h>
 #include <gpio.h>
 #include <sysctl.h>
+
+
 
 int main( void )
 {
