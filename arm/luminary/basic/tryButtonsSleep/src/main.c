@@ -117,9 +117,10 @@ main(void)
       //
       // Delay for a bit.
       //
-      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-        {
-        }
+//      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
+//        {
+//        }
+      SysCtlSleep();
     }
 
   return 0;
@@ -218,12 +219,10 @@ initHW(void)
 
   // Enable edge triggered interrupt on select button
   // Clear the interrupt just in case
-  GPIOIntTypeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_RISING_EDGE);
+  GPIOIntTypeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_FALLING_EDGE);
   GPIOPinIntEnable(GPIO_PORTF_BASE, GPIO_PIN_1 );
 
- // while(GPIOPinIntStatus(GPIO_PORTF_BASE, GPIO_PIN_1));
-  //GPIOPinIntClear(GPIO_PORTF_BASE, GPIO_PIN_1);
-  while(GPIOPinIntStatus(GPIO_PORTF_BASE, GPIO_PIN_1));
+  SysCtlPeripheralSleepEnable(SYSCTL_PERIPH_GPIOF);
 
 
   // Enable the interrupt for port F
