@@ -8,11 +8,12 @@
 #include "rit128x96x4.h"
 
 /* Hardware library includes. */
-#include "hw_memmap.h"
-#include "hw_types.h"
-#include "hw_sysctl.h"
-#include "sysctl.h"
-#include "gpio.h"
+#include <hw_memmap.h>
+#include <hw_types.h>
+#include <hw_sysctl.h>
+#include <sysctl.h>
+#include <gpio.h>
+#include <driverlib/adc.h>
 
 
 /* Constants used when writing strings to the display. */
@@ -48,7 +49,7 @@ GetKeyEvents(void);
 int
 main(void)
 {
-  volatile unsigned long ulLoop;
+  volatile unsigned long ulLoop, ulValue;
   volatile int event;
 
   initHW();
@@ -72,6 +73,22 @@ main(void)
       //
       GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
       // GPIO_PORTF_DATA_R |= 0x01;
+
+      //
+      // Trigger the sample sequence.
+      //
+      ADCProcessorTrigger(ADC0_BASE, 0);
+      //
+      // Wait until the sample sequence has completed.
+      //
+      while(!ADCIntStatus(ADC0_BASE, 0, false))
+      {
+      }
+      //
+      // Read the value from the ADC.
+      //
+      ADCSequenceDataGet(ADC0_BASE, 0, &ulValue);
+
 
       //
       // Delay for a bit.
@@ -152,6 +169,26 @@ ReadKeys(void)
   return KeyBits;
 }
 
+void initADC()
+{
+	//
+	// Enable the clock to the ADC module
+	//
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
+
+
+
+	//
+	// Enable the first sample sequencer to capture the value of channel 0 when
+	// the processor trigger occurs.
+	//
+	ADCSequenceConfigure(ADC0_BASE, 0, ADC_TRIGGER_PROCESSOR, 0);
+	ADCSequenceStepConfigure(ADC0_BASE, 0, 0,
+	ADC_CTL_IE | ADC_CTL_END | ADC_CTL_CH0);
+	ADCSequenceEnable(ADC0_BASE, 0);
+
+}
+
 void
 initHW(void)
 {
@@ -163,6 +200,10 @@ initHW(void)
       SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
   // Enable the ports
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
   SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
@@ -189,6 +230,8 @@ initHW(void)
   GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA,
       GPIO_PIN_TYPE_STD);
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+
+  initADC();
 
   // a short delay to ensure stable IO before running the rest of the program
   for (ulLoop = 0; ulLoop < 200; ulLoop++)
