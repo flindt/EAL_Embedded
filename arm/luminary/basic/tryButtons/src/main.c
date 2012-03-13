@@ -130,7 +130,7 @@ GetKeyEvents(void)
 {
   static int KeyPressFlag = 0;
   static int Count[NO_EVENT] =
-    { 0, 0, 0, 0, 0 };
+    { 0 };
   int LoopCount;
   int RawKeys;
 
