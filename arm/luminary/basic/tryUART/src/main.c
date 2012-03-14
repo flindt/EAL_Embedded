@@ -165,7 +165,7 @@ ReadKeys(void)
 
 void initUART0()
 {
-	//SysCtlPeripheralEnable( SYSCTL_PERIPH_UART0 );
+	SysCtlPeripheralEnable( SYSCTL_PERIPH_UART0 );
 
 	//
 	// Enable the UART.
