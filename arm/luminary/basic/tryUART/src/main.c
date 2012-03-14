@@ -14,7 +14,7 @@
 #include <hw_sysctl.h>
 #include <sysctl.h>
 #include <gpio.h>
-#include <driverlib/pwm.h>
+#include <driverlib/uart.h>
 
 // project includes
 #include "rit128x96x4.h"
@@ -62,7 +62,7 @@ main(void)
 
   RIT128x96x4Init(ulSSI_FREQUENCY);
   RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-  RIT128x96x4StringDraw("Buzzing...", 0, 10, mainFULL_SCALE);
+  RIT128x96x4StringDraw("Writing to UART0...", 0, 10, mainFULL_SCALE);
 
   //
   // Loop forever.
@@ -75,6 +75,13 @@ main(void)
       //
       GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
       // GPIO_PORTF_DATA_R |= 0x01;
+
+
+      //
+      // Put a character in the output buffer.
+      //
+      UARTCharPut(UART0_BASE, 'c');
+
 
 
       //
@@ -156,38 +163,28 @@ ReadKeys(void)
   return KeyBits;
 }
 
-void initPWM()
+void initUART0()
 {
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
-
-    GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
-	//
-	// Configure the PWM generator for count down mode with immediate updates
-	// to the parameters.
-	//
-	PWMGenConfigure(PWM_BASE, PWM_GEN_0,
-	PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-	//
-	// Set the period.
-	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, 80000);
-	//
-	// Set the pulse width of PWM1
-	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_1, 40000);
+	//SysCtlPeripheralEnable( SYSCTL_PERIPH_UART0 );
 
 	//
-	// Start the timers in generator 0.
+	// Enable the UART.
 	//
-	PWMGenEnable(PWM_BASE, PWM_GEN_0);
+	UARTEnable(UART0_BASE);
+
 	//
-	// Enable the output.
-	//
-	PWMOutputState(PWM_BASE, PWM_OUT_1_BIT, true);
+	    // Set GPIO A0 and A1 as UART pins.
+	    //
+	    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+	    //
+	    // Configure the UART for 115,200, 8-N-1 operation.
+	    //
+	    UARTConfigSetExpClk(UART0_BASE, SysCtlClockGet(), 115200,
+	                        (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
+	                         UART_CONFIG_PAR_NONE));
 
 }
-
 
 void
 initHW(void)
@@ -229,10 +226,12 @@ initHW(void)
       GPIO_PIN_TYPE_STD);
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
-  initPWM();
+  initUART0();
 
   // a short delay to ensure stable IO before running the rest of the program
   for (ulLoop = 0; ulLoop < 200; ulLoop++)
     {
     }
 }
+
+
