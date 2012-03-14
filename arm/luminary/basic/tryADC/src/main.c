@@ -5,7 +5,8 @@
  *      Author: pfl
  */
 
-#include "rit128x96x4.h"
+// Stdlib includes
+#include <string.h>
 
 /* Hardware library includes. */
 #include <hw_memmap.h>
@@ -14,6 +15,10 @@
 #include <sysctl.h>
 #include <gpio.h>
 #include <driverlib/adc.h>
+
+// project includes
+#include "rit128x96x4.h"
+#include "../externalFunctions/itoa.h"
 
 
 /* Constants used when writing strings to the display. */
@@ -49,8 +54,8 @@ GetKeyEvents(void);
 int
 main(void)
 {
-  volatile unsigned long ulLoop, ulValue;
-  volatile int event;
+  unsigned long ulLoop, ulValue;
+  char buffer[32] = "";
 
   initHW();
 
@@ -65,8 +70,6 @@ main(void)
   //
   while (1)
     {
-
-
 
       //
       // Turn on the LED.
@@ -88,6 +91,11 @@ main(void)
       // Read the value from the ADC.
       //
       ADCSequenceDataGet(ADC0_BASE, 0, &ulValue);
+
+      RIT128x96x4StringDraw("     ", 50, 50, mainFULL_SCALE);
+      itoa(ulValue, buffer, 10 );
+      RIT128x96x4StringDraw(buffer, 50, 50, mainFULL_SCALE);
+
 
 
       //
@@ -175,8 +183,6 @@ void initADC()
 	// Enable the clock to the ADC module
 	//
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_ADC);
-
-
 
 	//
 	// Enable the first sample sequencer to capture the value of channel 0 when
