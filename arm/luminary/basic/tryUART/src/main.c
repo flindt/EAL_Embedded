@@ -53,8 +53,7 @@ GetKeyEvents(void);
 int
 main(void)
 {
-  unsigned long ulLoop, ulValue;
-  char buffer[32] = "";
+  unsigned long ulLoop;
 
   initHW();
 
