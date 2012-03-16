@@ -71,7 +71,7 @@ int main(void) {
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-	RIT128x96x4StringDraw("Send / recieve over I2C...", 0, 10, mainFULL_SCALE);
+	RIT128x96x4StringDraw("tx / rx over I2C...", 0, 10, mainFULL_SCALE);
 
 	//
 	// Loop forever.
