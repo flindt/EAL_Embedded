@@ -53,17 +53,14 @@ GetKeyEvents(void);
 //
 // Global variables - Keep these to a minimum
 //
-unsigned long SecondsCount;
-unsigned long minutesCount;
 
 // With this setup it would seem like main() must be the first function in this file, otherwise
 // the wrong function gets called on reset.
 int main(void) {
 	unsigned long ulLoop;
-	char buffer[32];
-
-	SecondsCount = 0;
-	minutesCount = 0;
+	char buffer[32] = "hello";
+	char send_char = 'a';
+	char recieve_char = 'b';
 
 	initHW();
 
@@ -85,19 +82,30 @@ int main(void) {
 		// GPIO_PORTF_DATA_R |= 0x01;
 
 		RIT128x96x4StringDraw("               ", 50, 50, mainFULL_SCALE);
-		itoa(SecondsCount, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 50, 50, mainFULL_SCALE);
 
 		RIT128x96x4StringDraw("               ", 50, 60, mainFULL_SCALE);
-		itoa(minutesCount, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 50, 60, mainFULL_SCALE);
 
-		SysCtlSleep();
+
+		I2CMasterDataPut(I2C0_MASTER_BASE, 0xEE);
+		I2CMasterControl(I2C0_MASTER_BASE, I2C_MASTER_CMD_SINGLE_SEND);
+		// Wait for I2C to finish
+		while(I2CMasterBusy(I2C0_MASTER_BASE));
+
+
+		//
+		// Delay for a bit.
+		//
+		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
+		}
 
 		//
 		// Turn off the LED.
 		//
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+
+		buffer[0] = I2CSlaveDataGet(I2C1_SLAVE_BASE);
 
 		//
 		// Delay for a bit.
