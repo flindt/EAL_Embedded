@@ -9,6 +9,7 @@
 #include <string.h>
 
 /* Hardware library includes. */
+#include <lm3s6965.h>
 #include <hw_memmap.h>
 #include <hw_types.h>
 #include <hw_sysctl.h>
@@ -167,22 +168,25 @@ void initI2C_master(void) {
 	// Enable PortB and I2C on pin 2 and 3
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
 
-	GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3);
+	//GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3);
+	// Set GPIO Pins for Open-Drain operation
+	     GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_STRENGTH_2MA,
+	GPIO_PIN_TYPE_OD_WPU);
+	     GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_STRENGTH_2MA,
+	GPIO_PIN_TYPE_OD_WPU);
+
+	     // Give control to the I2C Module
+	     GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_DIR_MODE_HW);
+	     GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_DIR_MODE_HW);
 
 	//false = 100kHz, true = 400kHz
 	I2CMasterInitExpClk(I2C0_MASTER_BASE, SysCtlClockGet(), false);
-	I2CMasterInitExpClk(I2C0_SLAVE_BASE, SysCtlClockGet(), false);
+
+
 
 	// Slave address of DS1624 is 0x4f (binary 1001 111)
 	// false=write / true=read
 	I2CMasterSlaveAddrSet(I2C0_MASTER_BASE, 0x4f, false);
-
-	// Send 0xEE = start convert temperature
-	// I2CMasterDataPut(I2C0_MASTER_BASE, 0xEE);
-	// I2CMasterControl(I2C0_MASTER_BASE, I2C_MASTER_CMD_SINGLE_SEND);
-	// Wait for I2C to finish
-	// while(I2CMasterBusy(I2C0_MASTER_BASE));
-
 }
 
 void initI2C_slave(void) {
