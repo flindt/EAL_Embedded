@@ -5,7 +5,7 @@ This file describes how to setup debugging with the ARM board
 OpenOCD
 OpenOCD has to be set up as an external tool.
 	location : 		/usr/bin/openocd
-	arguments : 	--file /usr/share/openocd/scripts/board/ek-lm3s6965.cfg -c "init" -c "halt" -c "reset halt"
+	arguments : 	--file board/ek-lm3s6965.cfg -c "init" -c "halt" -c "reset halt"
 	in the "Build" tab, disable "Build before launch"
 	
 	
