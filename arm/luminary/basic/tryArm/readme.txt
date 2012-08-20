@@ -60,6 +60,8 @@ AND
 libraries : -ldriver
 
 added startup.c and standalone.ld 
+NOTICE : theese two files are made in pairs that work together - allways copy them both from a known good project!
+
 
 -T"../src/standalone.ld"
 
