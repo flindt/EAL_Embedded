@@ -26,3 +26,5 @@ Debugging
 To debug first run the external tool "OpenOCD".
 Then choose the debug configuration from the dropdown box.
 
+
+
