@@ -57,7 +57,7 @@ change the IO to use this
 Be carefull when linking libraries: 
 library search path : -L[[../../../../../sandbox/stellaris/stellaris-drivers/LuminaryMicro/arm-none-eabi-gcc/]]   
 AND
-libraries : -lgr -ldriver
+libraries : -ldriver
 
 added startup.c and standalone.ld 
 
