@@ -1,0 +1,30 @@
+This file describes how to setup debugging with the ARM board
+
+
+
+OpenOCD
+OpenOCD has to be set up as an external tool.
+	location : 		/usr/bin/openocd
+	arguments : 	--file board/ek-lm3s6965.cfg -c "init" -c "halt" -c "reset halt"
+	in the "Build" tab, disable "Build before launch"
+	
+	
+	
+Debug configuration
+Choose "GDB hardware debugging"
+	choose the "Project" first
+	use "Search project" to find the executable .elf file (you must have compiled the project successfully first)
+	under "Debugger" enter 
+			"GDB Command" :		arm-none-eabi-gdb
+	under "Startup"
+			"mon reset init" in the unnamed window 
+			Select "Load file"
+			use "Browse workspace" to find the .hex file to load, "Use file"
+			
+
+Debugging
+To debug first run the external tool "OpenOCD".
+Then choose the debug configuration from the dropdown box.
+
+
+
