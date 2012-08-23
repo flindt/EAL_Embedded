@@ -14,6 +14,9 @@
 #include "sysctl.h"
 #include "gpio.h"
 
+// Project includes
+#include "events.h"
+
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -30,14 +33,7 @@ const int KEY_PRESS_MINIMUM = 7;
 void
 initHW(void);
 
-//
-// Theese enums are used as events, and for passing the matching bit for a certain key
-// from ReadKeys to GetKeyEvents.
-// NO_EVENT must be last.
-enum KeyEvents
-{
-  KEY_ENTER, KEY_CANCEL, KEY_UP, KEY_DOWN, NO_EVENT
-};
+
 int
 ReadKeys(void);
 int
@@ -72,14 +68,6 @@ main(void)
 
       // This is where a statemachine could be added
       event = GetKeyEvents();
-      if (event == KEY_ENTER)
-        RIT128x96x4StringDraw("Enter Pressed    ", 0, 10, mainFULL_SCALE);
-      if (event == KEY_UP)
-        RIT128x96x4StringDraw("up Pressed     ", 0, 10, mainFULL_SCALE);
-      if (event == KEY_DOWN)
-        RIT128x96x4StringDraw("down Pressed    ", 0, 10, mainFULL_SCALE);
-      if (event == KEY_CANCEL)
-        RIT128x96x4StringDraw("cancel Pressed     ", 0, 10, mainFULL_SCALE);
 
       switch( event )
       {
@@ -93,20 +81,6 @@ main(void)
     	  break;
       }
 
-      //
-      // Delay for a bit.
-      // This is BAD STYLE (tm) any embedded system should be either free-running or timer based
-      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-        {
-        }
-
-
-      //
-      // Delay for a bit.
-      //
-      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-        {
-        }
     }
 
   return 0;
