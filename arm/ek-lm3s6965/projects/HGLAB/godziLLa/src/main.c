@@ -73,14 +73,25 @@ main(void)
       // This is where a statemachine could be added
       event = GetKeyEvents();
       if (event == KEY_ENTER)
-        RIT128x96x4StringDraw("Enter Pressed", 0, 0, mainFULL_SCALE);
+        RIT128x96x4StringDraw("Enter Pressed    ", 0, 10, mainFULL_SCALE);
       if (event == KEY_UP)
-        RIT128x96x4StringDraw("up Pressed", 0, 0, mainFULL_SCALE);
+        RIT128x96x4StringDraw("up Pressed     ", 0, 10, mainFULL_SCALE);
       if (event == KEY_DOWN)
-        RIT128x96x4StringDraw("down Pressed", 0, 0, mainFULL_SCALE);
+        RIT128x96x4StringDraw("down Pressed    ", 0, 10, mainFULL_SCALE);
       if (event == KEY_CANCEL)
-        RIT128x96x4StringDraw("cancel Pressed", 0, 0, mainFULL_SCALE);
+        RIT128x96x4StringDraw("cancel Pressed     ", 0, 10, mainFULL_SCALE);
 
+      switch( event )
+      {
+      case KEY_ENTER:
+    	  	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+    	    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+    	    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+    	    GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1, 0);
+    	    break;
+      default:
+    	  break;
+      }
 
       //
       // Delay for a bit.
