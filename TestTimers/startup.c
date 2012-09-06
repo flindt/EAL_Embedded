@@ -1,27 +1,24 @@
-//*****************************************************************************
+///*****************************************************************************
 //
-// startup.c - Boot code for Stellaris.
+// startup_ccs.c - Startup code for use with TI's Code Composer Studio.
 //
-// Copyright (c) 2005-2007 Luminary Micro, Inc.  All rights reserved.
-// 
+// Copyright (c) 2007-2012 Texas Instruments Incorporated.  All rights reserved.
 // Software License Agreement
 // 
-// Luminary Micro, Inc. (LMI) is supplying this software for use solely and
-// exclusively on LMI's microcontroller products.
+// Texas Instruments (TI) is supplying this software for use solely and
+// exclusively on TI's microcontroller products. The software is owned by
+// TI and/or its suppliers, and is protected under applicable copyright
+// laws. You may not combine this software with "viral" open-source
+// software in order to form a larger program.
 // 
-// The software is owned by LMI and/or its suppliers, and is protected under
-// applicable copyright laws.  All rights are reserved.  Any use in violation
-// of the foregoing restrictions may subject the user to criminal sanctions
-// under applicable laws, as well as to civil liability for the breach of the
-// terms and conditions of this license.
+// THIS SOFTWARE IS PROVIDED "AS IS" AND WITH ALL FAULTS.
+// NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT
+// NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE. TI SHALL NOT, UNDER ANY
+// CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR CONSEQUENTIAL
+// DAMAGES, FOR ANY REASON WHATSOEVER.
 // 
-// THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
-// OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
-// LMI SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
-// CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
-// 
-// This is part of revision 1392 of the Stellaris Peripheral Driver Library.
+// This is part of revision 9107 of the EK-LM3S6965 Firmware Package.
 //
 //*****************************************************************************
 
@@ -37,36 +34,32 @@ static void IntDefaultHandler(void);
 
 extern void Timer0IntHandler(void);
 extern void Timer1IntHandler(void);
-
-
 //*****************************************************************************
 //
-// The entry point for the application.
+// External declaration for the reset handler that is to be called when the
+// processor is started
 //
 //*****************************************************************************
-extern int main(void);
-
-//*****************************************************************************
-//
-// Reserve space for the system stack.
-//
-//*****************************************************************************
-#ifndef STACK_SIZE
-#define STACK_SIZE                              64
-#endif
-static unsigned long pulStack[STACK_SIZE];
+extern void _c_int00(void);
 
 //*****************************************************************************
 //
-// The minimal vector table for a Cortex-M3.  Note that the proper constructs
-// must be placed on this to ensure that it ends up at physical address
-// 0x0000.0000.
+// Linker variable that marks the top of the stack.
 //
 //*****************************************************************************
-__attribute__ ((section(".isr_vector")))
+extern unsigned long __STACK_TOP;
+
+//*****************************************************************************
+//
+// The vector table.  Note that the proper constructs must be placed on this to
+// ensure that it ends up at physical address 0x0000.0000 or at the start of
+// the program if located at a start address other than 0.
+//
+//*****************************************************************************
+#pragma DATA_SECTION(g_pfnVectors, ".intvecs")
 void (* const g_pfnVectors[])(void) =
 {
-    (void (*)(void))((unsigned long)pulStack + sizeof(pulStack)),
+    (void (*)(void))((unsigned long)&__STACK_TOP),
                                             // The initial stack pointer
     ResetISR,                               // The reset handler
     NmiSR,                                  // The NMI handler
@@ -78,11 +71,11 @@ void (* const g_pfnVectors[])(void) =
     0,                                      // Reserved
     0,                                      // Reserved
     0,                                      // Reserved
-    IntDefaultHandler,						// SVCall handler
+    IntDefaultHandler,                      // SVCall handler
     IntDefaultHandler,                      // Debug monitor handler
     0,                                      // Reserved
-    IntDefaultHandler,                     // The PendSV handler
-    IntDefaultHandler,                    // The SysTick handler
+    IntDefaultHandler,                      // The PendSV handler
+    IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
     IntDefaultHandler,                      // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
@@ -90,13 +83,13 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port E
     IntDefaultHandler,                      // UART0 Rx and Tx
     IntDefaultHandler,                      // UART1 Rx and Tx
-    IntDefaultHandler,                      // SSI Rx and Tx
-    IntDefaultHandler,                      // I2C Master and Slave
+    IntDefaultHandler,                      // SSI0 Rx and Tx
+    IntDefaultHandler,                      // I2C0 Master and Slave
     IntDefaultHandler,                      // PWM Fault
     IntDefaultHandler,                      // PWM Generator 0
     IntDefaultHandler,                      // PWM Generator 1
     IntDefaultHandler,                      // PWM Generator 2
-    IntDefaultHandler,                      // Quadrature Encoder
+    IntDefaultHandler,                      // Quadrature Encoder 0
     IntDefaultHandler,                      // ADC Sequence 0
     IntDefaultHandler,                      // ADC Sequence 1
     IntDefaultHandler,                      // ADC Sequence 2
@@ -118,29 +111,16 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // GPIO Port H
     IntDefaultHandler,                      // UART2 Rx and Tx
     IntDefaultHandler,                      // SSI1 Rx and Tx
-    IntDefaultHandler,                    // Timer 3 subtimer A
+    IntDefaultHandler,                      // Timer 3 subtimer A
     IntDefaultHandler,                      // Timer 3 subtimer B
     IntDefaultHandler,                      // I2C1 Master and Slave
     IntDefaultHandler,                      // Quadrature Encoder 1
     IntDefaultHandler,                      // CAN0
     IntDefaultHandler,                      // CAN1
-    IntDefaultHandler,                                      // Reserved
-    IntDefaultHandler,                              // Ethernet
+    IntDefaultHandler,                      // CAN2
+    IntDefaultHandler,                      // Ethernet
     IntDefaultHandler                       // Hibernate
 };
-
-//*****************************************************************************
-//
-// The following are constructs created by the linker, indicating where the
-// the "data" and "bss" segments reside in memory.  The initializers for the
-// for the "data" segment resides immediately following the "text" segment.
-//
-//*****************************************************************************
-extern unsigned long _etext;
-extern unsigned long _data;
-extern unsigned long _edata;
-extern unsigned long _bss;
-extern unsigned long _ebss;
 
 //*****************************************************************************
 //
@@ -155,34 +135,11 @@ extern unsigned long _ebss;
 void
 ResetISR(void)
 {
-    unsigned long *pulSrc, *pulDest;
-
     //
-    // Copy the data segment initializers from flash to SRAM.
+    // Jump to the CCS C initialization routine.
     //
-    pulSrc = &_etext;
-    for(pulDest = &_data; pulDest < &_edata; )
-    {
-        *pulDest++ = *pulSrc++;
-    }
-
-    //
-    // Zero fill the bss segment.
-    //
-    __asm("    ldr     r0, =_bss\n"
-          "    ldr     r1, =_ebss\n"
-          "    mov     r2, #0\n"
-          "    .thumb_func\n"
-          "zero_loop:\n"
-          "        cmp     r0, r1\n"
-          "        it      lt\n"
-          "        strlt   r2, [r0], #4\n"
-          "        blt     zero_loop");
-
-    //
-    // Call the application's entry point.
-    //
-    main();
+    __asm("    .global _c_int00\n"
+          "    b.w     _c_int00");
 }
 
 //*****************************************************************************
@@ -238,6 +195,3 @@ IntDefaultHandler(void)
     {
     }
 }
-
-
-
