@@ -17,8 +17,10 @@
 #include <gpio.h>
 #include <pwm.h>
 
+// needed for interrupts
 #include <interrupt.h>
 #include <inttypes.h>
+#include <hw_ints.h>
 
 // project includes
 #include "rit128x96x4.h"
@@ -234,6 +236,12 @@ void initPWM_PPM()
 	//
 	PWMOutputState(PWM_BASE, PWM_OUT_2_BIT, true);
 
+
+	// Set up interrupt for PWM load
+	PWMGenIntTrigEnable( PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
+	PWMIntEnable( PWM_BASE,PWM_INT_GEN_1);
+	IntEnable(INT_PWM1);
+
 }
 
 
@@ -298,10 +306,29 @@ initHW(void)
 //*****************************************************************************
 void PWM_1_IntHandler(void) {
 	volatile unsigned long ulLoop;
+	static int control = 0;
 	//
 	// Clear the PWM interrupt.
 	//
 	PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
+
+	if (control == 0)
+	{
+		//
+			// Set the pulse width of PWM2
+			//
+			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 200000 / PWM_ns_per_tick);
+
+			control = 1;
+	}
+	else {
+			//
+			// Set the pulse width of PWM2
+			//
+			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 400000 / PWM_ns_per_tick);
+
+			control = 0;
+	}
 
 	// a short delay to ensure stable IO before running the rest of the program
 	 for (ulLoop = 0; ulLoop < 4; ulLoop++)
