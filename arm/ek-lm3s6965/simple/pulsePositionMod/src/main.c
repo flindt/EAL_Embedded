@@ -35,6 +35,7 @@ const int KEY_PRESS_MINIMUM = 7;
 // Stuff for PWM control
 const long int PWMFREQ = 12500000;
 const long int PWM_ticks_per_10_us = 125;
+const long int PWM_ns_per_tick = 80;
 
 // Function prototypes
 void
@@ -219,7 +220,7 @@ void initPWM_PPM()
 	//
 	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 40 * PWM_ticks_per_10_us);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 400000 / PWM_ns_per_tick);
 
 	//
 	// Start the timers in generator 1.
