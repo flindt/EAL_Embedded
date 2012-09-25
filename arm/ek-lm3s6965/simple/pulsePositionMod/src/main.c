@@ -198,28 +198,28 @@ void initPWM_PPM()
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_4);
 
     GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
 	//
 	// Configure the PWM generator for count down mode with immediate updates
 	// to the parameters.
 	//
-	PWMGenConfigure(PWM_BASE, PWM_GEN_0,
+	PWMGenConfigure(PWM_BASE, PWM_GEN_1,
 	PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
 	//
 	// Set the period.
 	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, 80000);
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 30000);
 	//
-	// Set the pulse width of PWM1
+	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 40000);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 5000);
 
 	//
-	// Start the timers in generator 0.
+	// Start the timers in generator 1.
 	//
-	PWMGenEnable(PWM_BASE, PWM_GEN_0);
+	PWMGenEnable(PWM_BASE, PWM_GEN_1);
 	//
 	// Enable the output.
 	//
