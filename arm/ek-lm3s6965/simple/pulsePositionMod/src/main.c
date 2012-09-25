@@ -188,6 +188,45 @@ void initPWM()
 
 }
 
+void initPWM_PPM()
+{
+	///
+	/// Set up PWM2 / PB0
+	/// Period: 1.5ms	Ton: 0.4ms
+	///
+
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
+
+    GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
+	//
+	// Configure the PWM generator for count down mode with immediate updates
+	// to the parameters.
+	//
+	PWMGenConfigure(PWM_BASE, PWM_GEN_0,
+	PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
+	//
+	// Set the period.
+	//
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, 80000);
+	//
+	// Set the pulse width of PWM1
+	//
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 40000);
+
+	//
+	// Start the timers in generator 0.
+	//
+	PWMGenEnable(PWM_BASE, PWM_GEN_0);
+	//
+	// Enable the output.
+	//
+	PWMOutputState(PWM_BASE, PWM_OUT_2_BIT, true);
+
+}
+
 
 void
 initHW(void)
@@ -229,7 +268,7 @@ initHW(void)
       GPIO_PIN_TYPE_STD);
   GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
-  initPWM();
+  initPWM_PPM();
 
   // a short delay to ensure stable IO before running the rest of the program
   for (ulLoop = 0; ulLoop < 200; ulLoop++)
