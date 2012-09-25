@@ -43,6 +43,8 @@ static void IntDefaultHandler(void);
 //*****************************************************************************
 extern int main(void);
 
+extern void PWM_1_IntHandler(void);
+
 //*****************************************************************************
 //
 // Reserve space for the system stack.
@@ -91,7 +93,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // I2C Master and Slave
     IntDefaultHandler,                      // PWM Fault
     IntDefaultHandler,                      // PWM Generator 0
-    IntDefaultHandler,                      // PWM Generator 1
+    PWM_1_IntHandler,                      // PWM Generator 1
     IntDefaultHandler,                      // PWM Generator 2
     IntDefaultHandler,                      // Quadrature Encoder
     IntDefaultHandler,                      // ADC Sequence 0

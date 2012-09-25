@@ -17,6 +17,9 @@
 #include <gpio.h>
 #include <pwm.h>
 
+#include <interrupt.h>
+#include <inttypes.h>
+
 // project includes
 #include "rit128x96x4.h"
 
@@ -280,5 +283,29 @@ initHW(void)
   for (ulLoop = 0; ulLoop < 200; ulLoop++)
     {
     }
+
+    //
+  	// Enable processor interrupts.
+  	//
+  	IntMasterEnable();
+}
+
+
+//*****************************************************************************
+//
+// The PWM interupt handler
+//
+//*****************************************************************************
+void PWM_1_IntHandler(void) {
+	volatile unsigned long ulLoop;
+	//
+	// Clear the PWM interrupt.
+	//
+	PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
+
+	// a short delay to ensure stable IO before running the rest of the program
+	 for (ulLoop = 0; ulLoop < 4; ulLoop++)
+	    {
+	    }
 }
 
