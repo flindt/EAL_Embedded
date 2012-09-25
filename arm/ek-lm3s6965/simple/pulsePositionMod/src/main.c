@@ -38,16 +38,23 @@
 const int KEY_PRESS_MINIMUM = 7;
 
 // Stuff for PWM control
-const long int PWMFREQ = 12500000;
-const long int PWM_ticks_per_10_us = 125;
-const long int PWM_ns_per_tick = 80;
+#define NO_OFF_PPM_CHANNELS 8
+const long int PWM_ns_per_tick = 640;
+const long int PPM_Frame_Length_ns = 20000000;
+const long int PPM_Frame_Length_ticks = 20000000/640;
+const long int PPM_No_Channels = NO_OFF_PPM_CHANNELS;
+float PPM_Channel_values[ NO_OFF_PPM_CHANNELS ] = { 0.5,0.5,0.5,0.5,0.5,0.5,0.5,0.5 }; // Fill array with 0.5 - meaning 50 %
+const int long PPM_minimum_period_ns = 400 * 1000;			// Define minimum and maximum time between pulses
+const int long PPM_maximum_period_ns = 1500 * 1000;		// Each channel will be used to modulate between these
+const int long PPM_minimum_period_ticks = (400 * 1000)/640;			// Define minimum and maximum time between pulses
+const int long PPM_maximum_period_ticks = (1500 * 1000)/640;		// Each channel will be used to modulate between these
 
 // Function prototypes
 void
 initHW(void);
 
 //
-// Theese enums are used as events, and for passing the matching bit for a certain key
+// These enums are used as events, and for passing the matching bit for a certain key
 // from ReadKeys to GetKeyEvents.
 // NO_EVENT must be last.
 enum KeyEvents
@@ -72,7 +79,7 @@ main(void)
 
   RIT128x96x4Init(ulSSI_FREQUENCY);
   RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-  RIT128x96x4StringDraw("Buzzing...", 0, 10, mainFULL_SCALE);
+  RIT128x96x4StringDraw("Doing PPM...", 0, 10, mainFULL_SCALE);
 
   //
   // Loop forever.
@@ -208,8 +215,8 @@ void initPWM_PPM()
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	// Set the PWM clock for 1.25 MHz
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_4);
+	// Set the PWM clock for 6.25 MHz
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_32);
 
     GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
 	//
@@ -221,7 +228,7 @@ void initPWM_PPM()
 	//
 	// Set the period.
 	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 240 * PWM_ticks_per_10_us);
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 2400000 / PWM_ns_per_tick);
 	//
 	// Set the pulse width of PWM2
 	//
@@ -305,34 +312,32 @@ initHW(void)
 //
 //*****************************************************************************
 void PWM_1_IntHandler(void) {
-	volatile unsigned long ulLoop;
-	static int control = 0;
+	static int i = 0;
+	static long int TotalCount = 0;
+
+	long int countThisChannel;
+
 	//
 	// Clear the PWM interrupt.
-	//
+	// For now we only check 1 interrupt source, as it is the only one enabled
 	PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
 
-	if (control == 0)
-	{
-		//
-			// Set the pulse width of PWM2
-			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 200000 / PWM_ns_per_tick);
 
-			control = 1;
-	}
-	else {
-			//
-			// Set the pulse width of PWM2
-			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 400000 / PWM_ns_per_tick);
 
-			control = 0;
-	}
 
-	// a short delay to ensure stable IO before running the rest of the program
-	 for (ulLoop = 0; ulLoop < 4; ulLoop++)
-	    {
-	    }
+		if (i==8) {
+			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, PPM_Frame_Length_ticks - TotalCount);
+		}
+		else {
+			countThisChannel = PPM_minimum_period_ticks + PPM_Channel_values[i]*(PPM_maximum_period_ticks-PPM_minimum_period_ticks);
+			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1,countThisChannel);
+			TotalCount += countThisChannel;
+		}
+
+
+
+		i++;
+		if (i>PPM_No_Channels){ i = 0; TotalCount = 0;}
+
 }
 
