@@ -32,6 +32,10 @@
 // Stuff for the Key interface
 const int KEY_PRESS_MINIMUM = 7;
 
+// Stuff for PWM control
+const long int PWMFREQ = 12500000;
+const long int PWM_ticks_per_10_us = 125;
+
 // Function prototypes
 void
 initHW(void);
@@ -192,12 +196,13 @@ void initPWM_PPM()
 {
 	///
 	/// Set up PWM2 / PB0
-	/// Period: 1.5ms	Ton: 0.4ms
+	/// Period: 2.4ms	Ton: 0.4ms
 	///
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
+	// Set the PWM clock for 1.25 MHz
 	SysCtlPWMClockSet(SYSCTL_PWMDIV_4);
 
     GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -210,11 +215,11 @@ void initPWM_PPM()
 	//
 	// Set the period.
 	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 30000);
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 240 * PWM_ticks_per_10_us);
 	//
 	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 5000);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 40 * PWM_ticks_per_10_us);
 
 	//
 	// Start the timers in generator 1.
