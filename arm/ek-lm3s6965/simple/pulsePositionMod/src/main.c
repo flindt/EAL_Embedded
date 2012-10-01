@@ -37,17 +37,17 @@ const int KEY_PRESS_MINIMUM = 7;
 
 // Stuff for PWM control
 #define NO_OFF_PPM_CHANNELS 8
-const long int PWM_pulsewidth_ticks = 100000 / 640;
+const long int PWM_pulsewidth_ticks = 400000 / 640;
 const long int PWM_ns_per_tick = 640;
 const long int PPM_Frame_Length_ns = 20000000;
 const long int PPM_Frame_Length_ticks = 20000000 / 640;
 const long int PPM_No_Channels = NO_OFF_PPM_CHANNELS;
 float PPM_Channel_values[NO_OFF_PPM_CHANNELS] = { 0.5, 0.5, 0.5, 0.1, 0.9, 0.1,
 		0.9, 0.5 }; // Fill array with 0.5 - meaning 50 %
-const int long PPM_minimum_period_ns = 400 * 1000; // Define minimum and maximum time between pulses
-const int long PPM_maximum_period_ns = 1500 * 1000;	// Each channel will be used to modulate between these
-const int long PPM_minimum_period_ticks = (400 * 1000) / 640;// Define minimum and maximum time between pulses
-const int long PPM_maximum_period_ticks = (1500 * 1000) / 640;// Each channel will be used to modulate between these
+const int long PPM_minimum_period_ns = 1000 * 1000; // Define minimum and maximum time between pulses
+const int long PPM_maximum_period_ns = 2000 * 1000;	// Each channel will be used to modulate between these
+const int long PPM_minimum_period_ticks = (1000 * 1000) / 640;// Define minimum and maximum time between pulses
+const int long PPM_maximum_period_ticks = (2000 * 1000) / 640;// Each channel will be used to modulate between these
 
 // Function prototypes
 void
@@ -212,8 +212,9 @@ void initPWM_PPM() {
 	PWMGenEnable(PWM_BASE, PWM_GEN_1);
 	//
 	// Enable the output.
-	//
+	// Invert it to match Trainer input
 	PWMOutputState(PWM_BASE, PWM_OUT_2_BIT, true);
+	PWMOutputInvert(PWM_BASE, PWM_OUT_2_BIT, true);
 
 	// Set up interrupt for PWM load
 	PWMGenIntTrigEnable(PWM_BASE, PWM_GEN_1,
@@ -315,11 +316,10 @@ void PWM_1_IntHandler(void) {
 		if (i == PPM_No_Channels) {
 			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1,
 					PPM_Frame_Length_ticks - TotalCount);
-			//PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 5000);
 			//
 			// Set the pulse width of PWM2
 			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 15);
+			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_ticks);
 			i = 0;
 			TotalCount = 0;
 		} else {
@@ -332,7 +332,7 @@ void PWM_1_IntHandler(void) {
 			//
 			// Set the pulse width of PWM2
 			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 15);
+			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_ticks);
 			TotalCount += countThisChannel;
 			i++;
 		}
