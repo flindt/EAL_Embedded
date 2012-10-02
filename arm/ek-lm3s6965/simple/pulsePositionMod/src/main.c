@@ -15,6 +15,7 @@
 #include <sysctl.h>
 #include <gpio.h>
 #include <pwm.h>
+#include <timer.h>
 
 // needed for interrupts
 #include <interrupt.h>
@@ -147,37 +148,6 @@ int ReadKeys(void) {
 	return KeyBits;
 }
 
-void initPWM() {
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
-
-	GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
-	//
-	// Configure the PWM generator for count down mode with immediate updates
-	// to the parameters.
-	//
-	PWMGenConfigure(PWM_BASE, PWM_GEN_0,
-			PWM_GEN_MODE_DOWN | PWM_GEN_MODE_NO_SYNC);
-	//
-	// Set the period.
-	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_0, 80000);
-	//
-	// Set the pulse width of PWM1
-	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_1, 40000);
-
-	//
-	// Start the timers in generator 0.
-	//
-	PWMGenEnable(PWM_BASE, PWM_GEN_0);
-	//
-	// Enable the output.
-	//
-	PWMOutputState(PWM_BASE, PWM_OUT_1_BIT, true);
-
-}
-
 void initPWM_PPM() {
 	///
 	/// Set up PWM2 / PB0
@@ -224,6 +194,43 @@ void initPWM_PPM() {
 
 }
 
+void initTimer_Capture() {
+	///
+	/// Set up CCP0 / PD4 as Timer 0 Capture input
+	///
+
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+
+	//
+	// Configure timer 0 as capture.
+	//
+	TimerConfigure(TIMER0_BASE, TIMER_CFG_16_BIT_PAIR | TIMER_CFG_A_CAP_TIME);
+
+	// Set output type of pin PD4
+	GPIOPinTypeTimer(GPIO_PORTD_BASE, GPIO_PIN_4);
+
+	//
+	// Set the count time (TimerA).
+	//
+	TimerLoadSet(TIMER0_BASE, TIMER_A, 3000);
+
+
+	//
+	// Configure the counter (TimerB) to count both edges.
+	//
+	TimerControlEvent(TIMER0_BASE, TIMER_A, TIMER_EVENT_BOTH_EDGES);
+	//
+	// Enable the timer.
+	//
+	TimerEnable(TIMER0_BASE, TIMER_A);
+
+	// Set up interrupt for Timer capture
+	TimerIntEnable(TIMER0_BASE, TIMER_CAPA_EVENT);
+	IntEnable(INT_TIMER0A);
+
+}
+
 void initHW(void) {
 	volatile unsigned long ulLoop;
 
@@ -266,8 +273,10 @@ void initHW(void) {
 
 	initPWM_PPM();
 
+	initTimer_Capture();
+
 	// a short delay to ensure stable IO before running the rest of the program
-	for (ulLoop = 0; ulLoop < 200; ulLoop++) {
+	for (ulLoop = 0; ulLoop < 20; ulLoop++) {
 	}
 
 	//
@@ -296,22 +305,14 @@ void PWM_1_IntHandler(void) {
 	thisInterrupt = PWMGenIntStatus(PWM_BASE, PWM_GEN_1, true);
 	if (thisInterrupt & PWM_INT_CNT_ZERO) {
 
+		// This interrupt is just here to show how to use more than
+		// one interrupt source for the same interrupt vector
 		PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_ZERO);
-
-		//
-		// Turn off the LED.
-		//
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
 
 	}
 	if (thisInterrupt & PWM_INT_CNT_LOAD) {
 
 		PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
-
-		//
-		// Turn off the LED.
-		//
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
 
 		if (i == PPM_No_Channels) {
 			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1,
@@ -343,3 +344,33 @@ void PWM_1_IntHandler(void) {
 		; // Wait a little to make sure interrupt has cleared
 }
 
+void TIMER_0_IntHandler(void) {
+	volatile long int ulLoop;
+
+	long int thisInterrupt = 0;
+	static long int lastCount = 0;
+
+	//
+	// Clear the PWM interrupt.
+	// For now we only check 1 interrupt source, as it is the only one enabled
+
+	thisInterrupt = TimerIntStatus(TIMER0_BASE, true);
+	if (thisInterrupt & TIMER_CAPA_EVENT) {
+
+		TimerIntClear(TIMER0_BASE, TIMER_CAPA_EVENT);
+
+		//
+		// Turn on the LED.
+		//
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+
+	}
+
+	for (ulLoop = 0; ulLoop < 6; ulLoop++)
+		; // Wait a little to make sure interrupt has cleared
+
+	//
+	// Turn off the LED.
+	//
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+}
