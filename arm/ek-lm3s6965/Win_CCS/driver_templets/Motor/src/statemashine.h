@@ -8,8 +8,8 @@
 #ifndef STATEMASHINE_H_
 #define STATEMASHINE_H_
 
-
-void statemashine(int);
+void InitConsole(void);
+int statemashine(int);
 
 
 

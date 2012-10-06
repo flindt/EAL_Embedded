@@ -124,7 +124,6 @@ int ReadKeys(void)
 	{
 		KeyBits |= 1 << KEY0_EVENT;
 	}
-
 	if (!GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_0))
 	{
 		KeyBits |= 1 << KEY1_EVENT;

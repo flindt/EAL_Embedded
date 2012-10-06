@@ -41,7 +41,7 @@ void initHW(void);
 
 //Globel variables
 int event = NO_EVENT;
-
+int potmeter;
 
 // With this setup it would seem like main() must be the first function in this file, otherwise
 // the wrong function gets called on reset.
@@ -80,8 +80,9 @@ int main(void)
 		// Statmashine function
 		// This is where a statemachine could be added
 		// event = GetKeyEvents();
-		statemashine(GetKeyEvents());
+		potmeter = statemashine(GetKeyEvents());
 
+		motor(potmeter);
 		//
 		// Turn on the LED.
 		//

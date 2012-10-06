@@ -28,17 +28,39 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
-void statemashine(int event)
+int statemashine(int event)
 {
-
+		static int speed = 0;
 		if (event == KEY0_EVENT)
+		{
+			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Select Pressed", 0, 0, mainFULL_SCALE);
+		}
 		if (event == KEY1_EVENT)
+		{
+			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Up Pressed", 0, 0, mainFULL_SCALE);
+			speed++;
+		}
 		if (event == KEY2_EVENT)
+		{
+			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Down Pressed", 0, 0, mainFULL_SCALE);
+			speed--;
+			RIT128x96x4StringDraw("Speed", 0, 7, mainFULL_SCALE);
+
+		}
 		if (event == KEY3_EVENT)
+		{
+			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Enter Pressed", 0, 0, mainFULL_SCALE);
+
+		}
 		if (event == KEY4_EVENT)
+		{
+			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Cancel Pressed", 0, 0, mainFULL_SCALE);
+			speed = 0;
+		}
+		return speed;
 }
