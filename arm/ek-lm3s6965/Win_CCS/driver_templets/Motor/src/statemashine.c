@@ -40,27 +40,30 @@ int statemashine(int event)
 		{
 			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Up Pressed", 0, 0, mainFULL_SCALE);
-			speed++;
+			speed + 1000;
+			RIT128x96x4StringDraw("Speed + 1000", 0, 7, mainFULL_SCALE);
 		}
 		if (event == KEY2_EVENT)
 		{
 			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Down Pressed", 0, 0, mainFULL_SCALE);
-			speed--;
-			RIT128x96x4StringDraw("Speed", 0, 7, mainFULL_SCALE);
+			speed - 1000;
+			RIT128x96x4StringDraw("Speed - 1000", 0, 7, mainFULL_SCALE);
 
 		}
 		if (event == KEY3_EVENT)
 		{
 			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Enter Pressed", 0, 0, mainFULL_SCALE);
-
+			speed = 10000;
+			RIT128x96x4StringDraw("Speed = 10000", 0, 7, mainFULL_SCALE);
 		}
 		if (event == KEY4_EVENT)
 		{
 			RIT128x96x4Clear();
 			RIT128x96x4StringDraw("Cancel Pressed", 0, 0, mainFULL_SCALE);
 			speed = 0;
+			RIT128x96x4StringDraw("Speed = 0", 0, 7, mainFULL_SCALE);
 		}
 		return speed;
 }

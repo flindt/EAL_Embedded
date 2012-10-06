@@ -56,7 +56,7 @@ int main(void)
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-	RIT128x96x4StringDraw("enter the code ...", 0, 5, mainFULL_SCALE);
+	RIT128x96x4StringDraw("enter the code ...", 0, 7, mainFULL_SCALE);
 
 	// Wait for the select key to be pressed
 	while (GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1));
@@ -82,7 +82,7 @@ int main(void)
 		// event = GetKeyEvents();
 		potmeter = statemashine(GetKeyEvents());
 
-		motor(potmeter);
+		motor_init(potmeter);
 		//
 		// Turn on the LED.
 		//
