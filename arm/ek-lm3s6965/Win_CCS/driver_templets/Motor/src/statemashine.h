@@ -8,7 +8,7 @@
 #ifndef STATEMASHINE_H_
 #define STATEMASHINE_H_
 
-void InitConsole(void);
+
 int statemashine(int);
 
 
