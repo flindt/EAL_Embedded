@@ -69,6 +69,11 @@ int main(void)
 	// Wait for the select key to be pressed
 	while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3));
 
+    //
+    // Initialize the OLED display.
+    //Clean
+    RIT128x96x4Init(ulSSI_FREQUENCY);
+
 	//
 	// Loop forever.
 	//
@@ -81,8 +86,8 @@ int main(void)
 		// This is where a statemachine could be added
 		// event = GetKeyEvents();
 		potmeter = statemashine(GetKeyEvents());
+		motor(potmeter);
 
-		motor_init(potmeter);
 		//
 		// Turn on the LED.
 		//
@@ -108,6 +113,7 @@ int main(void)
 		for (ulLoop = 0; ulLoop < 200000; ulLoop++)
 			{
 			}
+
 	}
 }
 
@@ -116,32 +122,34 @@ void initHW(void)
 	volatile unsigned long ulLoop;
 	volatile int event;
 
-  //initHW();
-  SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	motor_init();
 
-  // Enable the ports
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
-  SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+	//SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 
-  // Inputs :
-  // PF1 : Select button
-  // PE0 : Up button
-  // PE1 : Down button
-  // PE2 : Left button
-  // PE3 : Right button
-  //
 
-  GPIODirModeSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_IN);
-  GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+	// Enable the ports
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
-  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+	// Inputs :
+	// PF1 : Select button
+	// PE0 : Up button
+	// PE1 : Down button
+	// PE2 : Left button
+	// PE3 : Right button
+	//
 
-  // Outputs:
-  // PF0 : Status LED
-  GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
-  GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
-  GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+	GPIODirModeSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_IN);
+	GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
+	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
+
+	// Outputs:
+	// PF0 : Status LED
+	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
   // a short delay to ensure stable IO before running the rest of the program
   for (ulLoop = 0; ulLoop < 200; ulLoop++)

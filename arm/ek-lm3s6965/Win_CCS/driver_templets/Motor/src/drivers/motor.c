@@ -14,7 +14,6 @@
  ============================================================================
  */
 
-
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_sysctl.h"
@@ -27,14 +26,10 @@
 #include "motor.h"
 #include "rit128x96x4.h"
 
-
-
-
 //*****************************************************************************
 //
 // pwmgen.c - PWM signal generation example.
 //
-
 
 //*****************************************************************************
 //
@@ -65,22 +60,18 @@ __error__(char *pcFilename, unsigned long ulLine)
 // This example demonstrates how to setup the PWM block to generate signals.
 //
 //*****************************************************************************
-void motor_init(int hastighed)
+void motor_init(void)
 {
 //setting up PWN
-    unsigned long ulPeriod;
+
     volatile unsigned long ulLoop;
 
     //
     // Set the clocking to run directly from the crystal.
     //
-    SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+
     SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
 
-    //
-    // Initialize the OLED display.
-    //
-    RIT128x96x4Init(1000000);
 
     //
     // Clear the screen and tell the user what is happening.
@@ -102,6 +93,11 @@ void motor_init(int hastighed)
     GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_0);
     GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
 
+}
+
+void motor(int hastighed)
+{
+    unsigned long ulPeriod;
     //
     // Compute the PWM period based on the system clock.
     //
@@ -112,29 +108,22 @@ void motor_init(int hastighed)
     //
     PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, ulPeriod);
-
     //
     // Set PWM0 to a duty cycle of 25% and PWM1 to a duty cycle of 75%.
     //
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ulPeriod / 4);
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, ulPeriod * 3 / 4);
+	//
+	// Enable the PWM0 and PWM1 output signals.
+	//
+	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
 
-    //
-    // Enable the PWM0 and PWM1 output signals.
-    //
-    PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
+	//
+	// Enable the PWM generator.
+	//
+	PWMGenEnable(PWM0_BASE, PWM_GEN_0);
 
-    //
-    // Enable the PWM generator.
-    //
-    PWMGenEnable(PWM0_BASE, PWM_GEN_0);
-
-    //
-    // Loop forever while the PWM signals are generated.
-    //
-}
-
-void motor(int hastighed)
-{
-
+	//
+	// Loop forever while the PWM signals are generated.
+	//
 }
