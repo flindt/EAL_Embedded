@@ -85,8 +85,9 @@ int main(void)
 		// Statmashine function
 		// This is where a statemachine could be added
 		// event = GetKeyEvents();
-		potmeter = statemashine(GetKeyEvents());
-		motor(potmeter);
+
+		statemashine(GetKeyEvents());
+
 
 		//
 		// Turn on the LED.

@@ -8,9 +8,13 @@
 #ifndef STATEMASHINE_H_
 #define STATEMASHINE_H_
 
+enum states { UPSTARTMENU, LED, MOTOR, STOPMOTOR, FORWARDMOTOR, BACKMOTOR, MAXSTATES };
 
-int statemashine(int);
-
-
+// forward function declarations
+int SetMotorParams( int State,int value );
+void OnEnter( int State);
+void OnExit( int State);
+int statemashine(int event);
+//------------------------------
 
 #endif /* STATEMASHINE_H_ */
