@@ -25,7 +25,7 @@
 
 int GetKeyEvents(void)
 {
-	const int KEY_PRESS_MINIMUM = 3;
+	const int KEY_PRESS_MINIMUM = 4;
 	static int KeyPressFlag = 0;
 	static int Count[NO_EVENT] = { 0 };
 

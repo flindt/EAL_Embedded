@@ -85,7 +85,7 @@ int Control()
     //
     // Compute the PWM period based on the system clock.
     //
-    ulPeriod = SysCtlClockGet() / 1;
+    ulPeriod = SysCtlClockGet() / 100;
 
     //
     // Set the PWM period to 440 (A) Hz.

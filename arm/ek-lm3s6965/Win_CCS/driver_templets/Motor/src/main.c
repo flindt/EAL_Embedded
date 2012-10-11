@@ -49,15 +49,14 @@ int main(void)
 {
 	volatile unsigned long ulLoop;
 	volatile int event;
-
+	//Hardware upstarts
 	initHW();
 
 	// Start the OLED display and write a message on it
-
 	RIT128x96x4Init(ulSSI_FREQUENCY);
-	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-	RIT128x96x4StringDraw("enter the code ...", 0, 7, mainFULL_SCALE);
-
+	RIT128x96x4StringDraw("Home App Control", 5, 42, mainFULL_SCALE);
+	RIT128x96x4StringDraw("enter the code.....", 5, 49, mainFULL_SCALE);
+	// Entry Password see under inputs
 	// Wait for the select key to be pressed
 	while (GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_1));
 	// Wait for the select key to be pressed
@@ -69,11 +68,11 @@ int main(void)
 	// Wait for the select key to be pressed
 	while (GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_3));
 
-    //
-    // Initialize the OLED display.
-    //Clean
-    RIT128x96x4Init(ulSSI_FREQUENCY);
-
+    // Clean the OLED display.
+	RIT128x96x4Clear();
+	for (ulLoop = 0; ulLoop < 200; ulLoop++)
+	    {
+	    }
 	//
 	// Loop forever.
 	//
@@ -81,14 +80,14 @@ int main(void)
 	{
 		// This is where a statemachine could be added
 
-
 		// Statmashine function
 		// This is where a statemachine could be added
 		// event = GetKeyEvents();
 
 		statemashine(GetKeyEvents());
 
-
+		//Debug LED to se if program is running
+		/*
 		//
 		// Turn on the LED.
 		//
@@ -114,7 +113,7 @@ int main(void)
 		for (ulLoop = 0; ulLoop < 200000; ulLoop++)
 			{
 			}
-
+		*/
 	}
 }
 
@@ -150,7 +149,12 @@ void initHW(void)
 	// PF0 : Status LED
 	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
 	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
+	//:H-birdges
+	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_DIR_MODE_OUT);
+	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, 0);
+
 
   // a short delay to ensure stable IO before running the rest of the program
   for (ulLoop = 0; ulLoop < 200; ulLoop++)

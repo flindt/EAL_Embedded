@@ -72,13 +72,6 @@ void motor_init(void)
 
     SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
 
-
-    //
-    // Clear the screen and tell the user what is happening.
-    //
-    RIT128x96x4StringDraw("Generating PWM", 18, 24, 15);
-    RIT128x96x4StringDraw("on PF0 and PD1", 18, 32, 15);
-
     //
     // Enable the peripherals used by this example.
     //
@@ -92,7 +85,18 @@ void motor_init(void)
     //
     GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_0);
     GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
+	//
+	// Enable the PWM0 and PWM1 output signals.
+	//
+	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, false);
+	//
+	// Enable the PWM generator.
+	//
+	PWMGenEnable(PWM0_BASE, PWM_GEN_0);
 
+	//
+	// Loop forever while the PWM signals are generated.
+	//
 }
 
 void motor(int hastighed)
@@ -104,7 +108,7 @@ void motor(int hastighed)
     ulPeriod = SysCtlClockGet() / hastighed;
 
     //
-    // Set the PWM period to 440 (A) Hz.
+    // Set the PWM period to 440 (A) Hz if on hastighed=100 .
     //
     PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, ulPeriod);
@@ -113,17 +117,19 @@ void motor(int hastighed)
     //
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ulPeriod / 4);
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, ulPeriod * 3 / 4);
-	//
-	// Enable the PWM0 and PWM1 output signals.
-	//
-	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
 
-	//
-	// Enable the PWM generator.
-	//
-	PWMGenEnable(PWM0_BASE, PWM_GEN_0);
+	if(hastighed > 0)
+	{
+		PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
+	}
+	if(hastighed == 0)
+	{
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
+		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
+		PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, false);
+	}
 
-	//
-	// Loop forever while the PWM signals are generated.
-	//
+
+
+
 }
