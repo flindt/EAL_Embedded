@@ -70,9 +70,6 @@ int main(void)
 
     // Clean the OLED display.
 	RIT128x96x4Clear();
-	for (ulLoop = 0; ulLoop < 200; ulLoop++)
-	    {
-	    }
 	//
 	// Loop forever.
 	//
@@ -85,7 +82,7 @@ int main(void)
 		// event = GetKeyEvents();
 
 		statemashine(GetKeyEvents());
-
+		//all functions the
 		//Debug LED to se if program is running
 		/*
 		//

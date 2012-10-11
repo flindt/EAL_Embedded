@@ -11,9 +11,9 @@
 enum states { UPSTARTMENU, LED, MOTOR, HASTMOTOR, MOVEFOBMOTOR, MAXSTATES };
 
 // forward function declarations
-void SetMotorParams( int State,int returnspeed );
+void SetMotorParams( int State,int returnspeed, int button );
 void OnEnter( int State);
-void OnExit( int State, int value, int setvalue);
+void OnExit( int State);
 int statemashine(int event);
 //------------------------------
 

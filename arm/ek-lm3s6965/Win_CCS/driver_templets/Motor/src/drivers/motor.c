@@ -86,7 +86,7 @@ void motor_init(void)
     GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_0);
     GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
 	//
-	// Enable the PWM0 and PWM1 output signals.
+	// Enable the PWM0 and PWM1 output signals if true.
 	//
 	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, false);
 	//
