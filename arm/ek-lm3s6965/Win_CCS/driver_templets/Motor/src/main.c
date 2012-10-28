@@ -18,7 +18,7 @@
 #include "statemashine.h"
 
 #include "drivers/rit128x96x4.h"
-#include "drivers/control.h"
+
 #include "drivers/motor.h"
 
 #include "inc/hw_memmap.h"
@@ -83,34 +83,7 @@ int main(void)
 
 		statemashine(GetKeyEvents());
 		//all functions the
-		//Debug LED to se if program is running
-		/*
-		//
-		// Turn on the LED.
-		//
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
-		// GPIO_PORTF_DATA_R |= 0x01;
 
-		//
-		// Delay for a bit.
-		// This is BAD STYLE (tm) any embedded system should be either free-running or timer based
-		for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-			{
-			}
-
-		//
-		// Turn off the LED.
-		//
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-		//GPIO_PORTF_DATA_R &= ~(0x01);
-
-		//
-		// Delay for a bit.
-		//
-		for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-			{
-			}
-		*/
 	}
 }
 
@@ -119,13 +92,13 @@ void initHW(void)
 	volatile unsigned long ulLoop;
 	volatile int event;
 
-	motor_init();
+	motor_init();//! Hardware set up for motor control over pwm start up
 
 	//SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
-	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	SysCtlClockSet(SYSCTL_SYSDIV_1 | SYSCTL_USE_OSC | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);//set to use osc its better for pwm
 
 
-	// Enable the ports
+	//! Enable the ports
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
@@ -147,10 +120,10 @@ void initHW(void)
 	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_DIR_MODE_OUT);
 	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 0);
-	//:H-birdges
+	//!:H-birdges outputs off set too off at start
 	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_DIR_MODE_OUT);
 	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
-	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, 0);
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, 0);//! 0 is off set to GPIO_PIN_2 |GPIO_PIN_3 to make on
 
 
   // a short delay to ensure stable IO before running the rest of the program

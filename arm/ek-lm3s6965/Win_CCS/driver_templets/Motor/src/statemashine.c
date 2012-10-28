@@ -1,7 +1,7 @@
 /*
  * Example code for a very simple statemachine.
  *
- * Used in teaching C programming on embedded systems at EAL
+ * Used in teaching C programming on embedded systems at EAL with modyfaksion from Lars
  *
  */
 //Includes
@@ -11,7 +11,7 @@
 #include "externalFunctions/itoa.h"
 
 #include "drivers/rit128x96x4.h"
-#include "drivers/control.h"
+
 #include "drivers/motor.h"
 
 #include "inc/hw_memmap.h"
@@ -30,7 +30,7 @@
 
 // State definitions
 
-int TS_State = UPSTARTMENU;
+int TS_State = UPSTARTMENU;//! This is where to set where in the Menu its starts up when you power the state mashine up
 
 /* The SM does not know anything about the system. This way it can be tested on a
  * different C compiler very easily.
@@ -45,13 +45,11 @@ int statemashine( int event )
 	static int SetSpeed = 0;
 
 	char buffer[32];
-
+	//!there is 5 buttons to use in this state mashine its up, down, enter, cancel and selcet and under them is what happen if you push it
+	//!every case end on break;
 	switch( TS_State )
     {
 	case UPSTARTMENU:
-			RIT128x96x4StringDraw("LED Control",			2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" WelCome To App Home",	2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Curtian Control",		2,	57, mainFULL_SCALE);
 		switch (event)
 		{
 		case KEY0_EVENT_SELECT:
@@ -76,11 +74,6 @@ int statemashine( int event )
 		break;
 
 	case LED:
-
-			RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" Motor Control ",		2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("LED off ", 				2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
 		switch (event)
 		{
 		case KEY0_EVENT_SELECT:
@@ -112,10 +105,6 @@ int statemashine( int event )
 		break;
 
 	case MOTOR:
-			RIT128x96x4StringDraw("Curtain O/C", 			2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" Motor Control ", 		2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Movement speed", 		2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
 		switch (event)
 		{
 		case KEY0_EVENT_SELECT:
@@ -142,12 +131,6 @@ int statemashine( int event )
 		break;
 
 	case HASTMOTOR:
-			RIT128x96x4StringDraw("Select to MotorMenu", 	2,	24, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Enter SAVE value", 		2,	32, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Up   +100 to PWM", 		2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" Motor Control ", 		2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Down -100 to PWM", 		2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel makes PWM to 0", 	2,	65, mainFULL_SCALE);
 		RIT128x96x4StringDraw("set        ",				0,	77, mainFULL_SCALE);
 		itoa(SetSpeed, buffer, 10);
 		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
@@ -197,10 +180,6 @@ int statemashine( int event )
 		break;
 
 	case MOVEFOBMOTOR:
-			RIT128x96x4StringDraw("Up          ", 			2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" Curtian O/C", 			2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Down        ", 			2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel to Stop",			2,	65, mainFULL_SCALE);
 		RIT128x96x4StringDraw("on               ",			0,	86, mainFULL_SCALE);
 		itoa(Speed, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
@@ -252,14 +231,14 @@ int statemashine( int event )
 	// The program should never get here !
     }
 
-    if (NextState != TS_State)
+    if (NextState != TS_State)//!here is set want the state mashine do after it round one time ture the program after a state is changed
     {
-		OnEnter(NextState);
-        OnExit(TS_State);
+    	OnExit(TS_State);//!befor it changes
+		OnEnter(NextState);//after it changes
         TS_State = NextState;
     }
 
-    SetMotorParams( TS_State, Speed, event);
+    SetMotorParams( TS_State, Speed, event);//!what the state mashine every time it run ture the program
 
 return TS_State;
 }
@@ -274,6 +253,43 @@ return TS_State;
 void OnEnter( int State)
 {
 	RIT128x96x4Clear();
+	switch (State)
+		{
+			case UPSTARTMENU:
+				RIT128x96x4StringDraw("LED Control",			2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" WelCome To App Home",	2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Curtian Control",		2,	57, mainFULL_SCALE);
+				break;
+			case LED:
+				RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" Motor Control ",		2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("LED off ", 				2,	57, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
+				break;
+			case MOTOR:
+				RIT128x96x4StringDraw("Curtain O/C", 			2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" Motor Control ", 		2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Movement speed", 		2,	57, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
+				break;
+			case HASTMOTOR:
+				RIT128x96x4StringDraw("Select to MotorMenu", 	2,	24, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Enter SAVE value", 		2,	32, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Up   +100 to PWM", 		2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" Motor Control ", 		2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Down -100 to PWM", 		2,	57, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Cancel makes PWM to 0", 	2,	65, mainFULL_SCALE);
+				break;
+			case MOVEFOBMOTOR:
+				RIT128x96x4StringDraw("Up          ", 			2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" Curtian O/C", 			2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Down        ", 			2,	57, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Cancel to Stop",			2,	65, mainFULL_SCALE);
+				break;
+			default:
+				break;
+			// The program should never get here !
+		}
 }
 
 void OnExit( int State)
@@ -281,9 +297,18 @@ void OnExit( int State)
 
 }
 
+
 void SetMotorParams( int State,int returnspeed, int button)
 {
-	switch (button)
+	switch (State)// to show menu display at start i set it here
+		{
+			case UPSTARTMENU:
+				RIT128x96x4StringDraw("LED Control",			2,	41, mainFULL_SCALE);
+				RIT128x96x4StringDraw(" WelCome To App Home",	2,	49, mainFULL_SCALE);
+				RIT128x96x4StringDraw("Curtian Control",		2,	57, mainFULL_SCALE);
+				break;
+		}
+	switch (button)//! to see want button is pressed in all menus they are set here
 		{
 		case KEY0_EVENT_SELECT:
 			RIT128x96x4StringDraw("Select Pressed",			0,	0, mainFULL_SCALE);

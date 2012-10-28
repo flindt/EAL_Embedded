@@ -13,7 +13,13 @@
  Description : output in C, Ansi-style
  ============================================================================
  */
-
+/**
+ * @quick does stuff
+ *
+ * more detailed
+ * @param State does othe suff
+ *
+ */
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_sysctl.h"
@@ -26,21 +32,13 @@
 #include "motor.h"
 #include "rit128x96x4.h"
 
-//*****************************************************************************
-//
-// pwmgen.c - PWM signal generation example.
-//
 
-//*****************************************************************************
-//
-//! \addtogroup example_list
-//! <h1>PWM (pwmgen)</h1>
-//!
 //! This example application utilizes the PWM peripheral to output a 25% duty
 //! cycle PWM signal and a 75% duty cycle PWM signal, both at 440 Hz.  Once
 //! configured, the application enters an infinite loop, doing nothing while
 //! the PWM peripheral continues to output its signals.
 //
+
 //*****************************************************************************
 
 //*****************************************************************************
@@ -75,7 +73,7 @@ void motor_init(void)
     //
     // Enable the peripherals used by this example.
     //
-    SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM0);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOD);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
@@ -105,10 +103,10 @@ void motor(int hastighed)
     //
     // Compute the PWM period based on the system clock.
     //
-    ulPeriod = SysCtlClockGet() / hastighed;
+    ulPeriod = SysCtlClockGet() / hastighed;//! if the @param hastighed is 100 there is 100 hz on pin PWM 1 with 200 there is 200 hz aso.
 
     //
-    // Set the PWM period to 440 (A) Hz if on hastighed=100 .
+    // Set the PWM0 period to 440 (A) Hz if on hastighed=100
     //
     PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, ulPeriod);
@@ -118,18 +116,15 @@ void motor(int hastighed)
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ulPeriod / 4);
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, ulPeriod * 3 / 4);
 
-	if(hastighed > 0)
+	if(hastighed > 0)//! to turn on PWM if they a set to a speed
 	{
 		PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
 	}
-	if(hastighed == 0)
+	if(hastighed == 0)//!to turn of PWM and set the port to 0 so they a not run some thing on the motors
 	{
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
 		PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, false);
 	}
-
-
-
 
 }
