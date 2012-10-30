@@ -18,7 +18,7 @@
 #include <interrupt.h>
 #include <inttypes.h>
 #include <gpio.h>
-#include <driverlib/i2c.h>
+#include <i2c.h>
 
 // project includes
 #include "rit128x96x4.h"
@@ -168,16 +168,7 @@ void initI2C_master(void) {
 	// Enable PortB and I2C on pin 2 and 3
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_I2C0);
 
-	//GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3);
-	// Set GPIO Pins for Open-Drain operation
-	     GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_STRENGTH_2MA,
-	GPIO_PIN_TYPE_OD_WPU);
-	     GPIOPadConfigSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_STRENGTH_2MA,
-	GPIO_PIN_TYPE_OD_WPU);
-
-	     // Give control to the I2C Module
-	     GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_2, GPIO_DIR_MODE_HW);
-	     GPIODirModeSet(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_DIR_MODE_HW);
+	GPIOPinTypeI2C(GPIO_PORTB_BASE, GPIO_PIN_2 | GPIO_PIN_3);
 
 	//false = 100kHz, true = 400kHz
 	I2CMasterInitExpClk(I2C0_MASTER_BASE, SysCtlClockGet(), false);

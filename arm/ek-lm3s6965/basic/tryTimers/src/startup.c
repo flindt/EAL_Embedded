@@ -35,6 +35,9 @@ static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
 
+extern void Timer0IntHandler(void);
+extern void Timer1IntHandler(void);
+
 
 //*****************************************************************************
 //
@@ -42,8 +45,6 @@ static void IntDefaultHandler(void);
 //
 //*****************************************************************************
 extern int main(void);
-extern void Timer0IntHandler(void);
-extern void Timer1IntHandler(void);
 
 //*****************************************************************************
 //
@@ -51,7 +52,7 @@ extern void Timer1IntHandler(void);
 //
 //*****************************************************************************
 #ifndef STACK_SIZE
-#define STACK_SIZE                              120
+#define STACK_SIZE                              64
 #endif
 static unsigned long pulStack[STACK_SIZE];
 
@@ -123,7 +124,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // Quadrature Encoder 1
     IntDefaultHandler,                      // CAN0
     IntDefaultHandler,                      // CAN1
-    0,                                      // Reserved
+    IntDefaultHandler,                                      // Reserved
     IntDefaultHandler,                              // Ethernet
     IntDefaultHandler                       // Hibernate
 };
@@ -145,7 +146,7 @@ extern unsigned long _ebss;
 //
 // This is the code that gets called when the processor first starts execution
 // following a reset event.  Only the absolutely necessary set is performed,
-// after which the application supplied main() routine is called.  Any fancy
+// after which the application supplied entry() routine is called.  Any fancy
 // actions (such as making decisions based on the reset cause register, and
 // resetting the bits in that register) are left solely in the hands of the
 // application.
@@ -168,10 +169,15 @@ ResetISR(void)
     //
     // Zero fill the bss segment.
     //
-    for(pulDest = &_bss; pulDest < &_ebss; )
-    {
-        *pulDest++ = 0;
-    }
+    __asm("    ldr     r0, =_bss\n"
+          "    ldr     r1, =_ebss\n"
+          "    mov     r2, #0\n"
+          "    .thumb_func\n"
+          "zero_loop:\n"
+          "        cmp     r0, r1\n"
+          "        it      lt\n"
+          "        strlt   r2, [r0], #4\n"
+          "        blt     zero_loop");
 
     //
     // Call the application's entry point.
@@ -233,15 +239,5 @@ IntDefaultHandler(void)
     }
 }
 
-//*****************************************************************************
-//
-// A dummy printf function to satisfy the calls to printf from uip.  This
-// avoids pulling in the run-time library.
-//
-//*****************************************************************************
-int
-uipprintf(const char *fmt, ...)
-{
-    return(0);
-}
+
 
