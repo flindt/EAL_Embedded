@@ -28,7 +28,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 
-
+//!Setting up the Display
 #define mainCHARACTER_HEIGHT				( 9 )
 #define mainMAX_ROWS_128					( mainCHARACTER_HEIGHT * 14 )
 #define mainMAX_ROWS_96						( mainCHARACTER_HEIGHT * 10 )
@@ -36,15 +36,15 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
-// Function prototypes
+//! Function prototypes
 void initHW(void);
 
-//Globel variables
-int event = NO_EVENT;
-int potmeter;
+//!Globel variables
+int event = NO_EVENT;//! Set key events to no event so it not flooting
 
-// With this setup it would seem like main() must be the first function in this file, otherwise
-// the wrong function gets called on reset.
+
+//! With this setup it would seem like main() must be the first function in this file, otherwise
+//! the wrong function gets called on reset.
 int main(void)
 {
 	volatile unsigned long ulLoop;
@@ -52,7 +52,7 @@ int main(void)
 	//Hardware upstarts
 	initHW();
 
-	// Start the OLED display and write a message on it
+	//! Start the OLED display and write a message on it
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Home App Control", 5, 42, mainFULL_SCALE);
 	RIT128x96x4StringDraw("enter the code.....", 5, 49, mainFULL_SCALE);

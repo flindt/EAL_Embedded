@@ -1,4 +1,4 @@
-/*
+/**
  * statemashine.h
  *
  *  Created on: 04/10/2012
@@ -7,7 +7,7 @@
 
 #ifndef STATEMASHINE_H_
 #define STATEMASHINE_H_
-
+//! This is the @param enum of the states are so need a state more here is to make it
 enum states { UPSTARTMENU, LED, MOTOR, HASTMOTOR, MOVEFOBMOTOR, MAXSTATES };
 
 // forward function declarations
