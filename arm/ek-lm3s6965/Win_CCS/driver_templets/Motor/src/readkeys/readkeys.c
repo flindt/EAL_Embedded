@@ -13,7 +13,12 @@
  Description : Input reading in C, Ansi-style
  ============================================================================
  */
-
+//*****************************************************************************
+//
+//! \addtogroup Inputs ports Setting
+//! @{
+//
+//*****************************************************************************
 #include "readkeys.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -21,11 +26,13 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
 
-// Stuff for the Key interface
+//! Stuff for the Key interface
 
 int GetKeyEvents(void)
 {
-	const int KEY_PRESS_MINIMUM = 4;
+
+	const int KEY_PRESS_MINIMUM = 4;//! line 34 @param KET_PRESS_MINIMUM is how many time it have to se the key in press down to make a event
+
 	static int KeyPressFlag = 0;
 	static int Count[NO_EVENT] = { 0 };
 
@@ -34,7 +41,7 @@ int GetKeyEvents(void)
 
 	RawKeys = ReadKeys();
 
-	for(LoopCount = 0; LoopCount < NO_EVENT; LoopCount++)
+	for(LoopCount = 0; LoopCount < NO_EVENT; LoopCount++)//!Anti bounce loop
 		{
 		if (RawKeys & (1 << LoopCount))
 			{
@@ -58,7 +65,7 @@ int GetKeyEvents(void)
 	return NO_EVENT;
 }
 
-int ReadKeys(void)
+int ReadKeys(void)//!line 68 key input to events
 {
 	int KeyBits = 0;
 
@@ -85,3 +92,9 @@ int ReadKeys(void)
 
 	return KeyBits;
 }
+//*****************************************************************************
+//
+// Close the Doxygen group.
+//! @}
+//
+//*****************************************************************************
