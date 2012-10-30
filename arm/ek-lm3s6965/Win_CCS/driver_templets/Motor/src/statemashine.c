@@ -4,6 +4,21 @@
  * Used in teaching C programming on embedded systems at EAL with modyfaksion from Lars
  *
  */
+/*
+ ============================================================================
+ Name        : Statemashine.c
+ Author      : Lars
+ Version     :
+ Copyright   : Your copyright notice
+ Description : Statemashine to motor and LED outputs in C, Ansi-style
+ ============================================================================
+ */
+//*****************************************************************************
+//
+//! \addtogroup StateMashine
+//! @{
+//
+//*****************************************************************************
 //Includes
 #include "readkeys/readkeys.h"
 #include "statemashine.h"
@@ -28,9 +43,9 @@
 #define mainFULL_SCALE						( 15 )
 #define ulSSI_FREQUENCY						( 3500000UL )
 
-// State definitions
-
-int TS_State = UPSTARTMENU;//! This is where to set where in the Menu its starts up when you power the state mashine up
+//! State definitions
+//! Line 48 is where to set where in the Menu its starts up when you power up the statemashine
+int TS_State = UPSTARTMENU;
 
 /* The SM does not know anything about the system. This way it can be tested on a
  * different C compiler very easily.
@@ -45,8 +60,8 @@ int statemashine( int event )
 	static int SetSpeed = 0;
 
 	char buffer[32];
-	//!there is 5 buttons to use in this state mashine its up, down, enter, cancel and selcet and under them is what happen if you push it
-	//!every case end on break;
+	//!there is 5 buttons to use in this statemashine its @param KEY?_EVENT_?
+	//! and under them is what happen if you push it... every case end on break;
 	switch( TS_State )
     {
 	case UPSTARTMENU:
@@ -231,10 +246,10 @@ int statemashine( int event )
 	// The program should never get here !
     }
 
-    if (NextState != TS_State)//!here is set want the state mashine do after it round one time ture the program after a state is changed
+    if (NextState != TS_State)//!line 249 is set want the state mashine do after it round one time ture the program after a state is changed
     {
-    	OnExit(TS_State);//!befor it changes
-		OnEnter(NextState);//after it changes
+    	OnExit(TS_State);//! line 251 befor it changes
+		OnEnter(NextState);//! line 252 after it changes
         TS_State = NextState;
     }
 
@@ -308,7 +323,7 @@ void SetMotorParams( int State,int returnspeed, int button)
 				RIT128x96x4StringDraw("Curtian Control",		2,	57, mainFULL_SCALE);
 				break;
 		}
-	switch (button)//! to see want button is pressed in all menus they are set here
+	switch (button)//!line 311 to 334 to see want button is pressed in all menus they are set here
 		{
 		case KEY0_EVENT_SELECT:
 			RIT128x96x4StringDraw("Select Pressed",			0,	0, mainFULL_SCALE);
@@ -339,3 +354,9 @@ void SetMotorParams( int State,int returnspeed, int button)
 	}
 	motor(returnspeed);
 }
+//*****************************************************************************
+//
+// Close the Doxygen group.
+//! @}
+//
+//*****************************************************************************

@@ -1,7 +1,8 @@
         /**
-         * C++ version 0.4 char* style "itoa":
-         * Written by Lukás Chmela
-         * Released under GPLv3.
+          C++ version 0.4 char* style "itoa":
+          Written by Lukás Chmela
+          Released under GPLv3.
+		  working in C
          */
         char* itoa(int value, char* result, int base) {
                 // check that the base if valid

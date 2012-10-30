@@ -1,25 +1,18 @@
 /*
- * motor.c
- *
- *  Created on: 23/08/2012
- *      Author: Lasse
- */
-/*
  ============================================================================
  Name        : motor.c
  Author      : Lars
  Version     :
  Copyright   : Your copyright notice
- Description : output in C, Ansi-style
+ Description : output to motor controller in C, Ansi-style
  ============================================================================
  */
-/**
- * @quick does stuff
- *
- * more detailed
- * @param State does othe suff
- *
- */
+//*****************************************************************************
+//
+//! \addtogroup Motor Settings
+//! @{
+//
+//*****************************************************************************
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_sysctl.h"
@@ -60,7 +53,7 @@ __error__(char *pcFilename, unsigned long ulLine)
 //*****************************************************************************
 void motor_init(void)
 {
-//setting up PWN
+//!setting up PWN
 
     volatile unsigned long ulLoop;
 
@@ -78,22 +71,22 @@ void motor_init(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
     //
-    // Set GPIO F0 and D1 as PWM pins.  They are used to output the PWM0 and
-    // PWM1 signals.
+    //! Set GPIO F0 and D1 as PWM pins.  They are used to output the PWM0 and
+    //! PWM1 signals.
     //
     GPIOPinTypePWM(GPIO_PORTF_BASE, GPIO_PIN_0);
     GPIOPinTypePWM(GPIO_PORTD_BASE, GPIO_PIN_1);
 	//
-	// Enable the PWM0 and PWM1 output signals if true.
+	//! Enable the PWM0 and PWM1 output signals if true.
 	//
 	PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, false);
 	//
-	// Enable the PWM generator.
+	//! Enable the PWM generator.
 	//
 	PWMGenEnable(PWM0_BASE, PWM_GEN_0);
 
 	//
-	// Loop forever while the PWM signals are generated.
+	//! Loop forever while the PWM signals are generated.
 	//
 }
 
@@ -101,9 +94,9 @@ void motor(int hastighed)
 {
     unsigned long ulPeriod;
     //
-    // Compute the PWM period based on the system clock.
+    //! Compute the PWM period based on the system clock.
     //
-    ulPeriod = SysCtlClockGet() / hastighed;//! if the @param hastighed is 100 there is 100 hz on pin PWM 1 with 200 there is 200 hz aso.
+    ulPeriod = SysCtlClockGet() / hastighed;//! line 99 if the @param hastighed is 100 there is 100 hz on pin PWM 1 with 200 there is 200 hz aso.
 
     //
     // Set the PWM0 period to 440 (A) Hz if on hastighed=100
@@ -111,16 +104,16 @@ void motor(int hastighed)
     PWMGenConfigure(PWM0_BASE, PWM_GEN_0, PWM_GEN_MODE_UP_DOWN | PWM_GEN_MODE_NO_SYNC);
     PWMGenPeriodSet(PWM0_BASE, PWM_GEN_0, ulPeriod);
     //
-    // Set PWM0 to a duty cycle of 25% and PWM1 to a duty cycle of 75%.
+    //! line 109 and 110 Set PWM0 to a duty cycle of 25% and PWM1 to a duty cycle of 75%.
     //
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_0, ulPeriod / 4);
     PWMPulseWidthSet(PWM0_BASE, PWM_OUT_1, ulPeriod * 3 / 4);
 
-	if(hastighed > 0)//! to turn on PWM if they a set to a speed
+	if(hastighed > 0)//! line 112 to turn on PWM if they a set to a speed
 	{
 		PWMOutputState(PWM0_BASE, PWM_OUT_0_BIT | PWM_OUT_1_BIT, true);
 	}
-	if(hastighed == 0)//!to turn of PWM and set the port to 0 so they a not run some thing on the motors
+	if(hastighed == 0)//! line 116 to turn of PWM and set the port to 0 so they a not run some thing on the motors
 	{
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2, 0);
 		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0);
@@ -128,3 +121,9 @@ void motor(int hastighed)
 	}
 
 }
+//*****************************************************************************
+//
+// Close the Doxygen group.
+//! @}
+//
+//*****************************************************************************
