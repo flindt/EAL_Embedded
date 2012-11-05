@@ -24,6 +24,7 @@
 
 // project includes
 #include "rit128x96x4.h"
+#include "../externalFunctions/itoa.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -43,12 +44,15 @@ const long int PWM_ns_per_tick = 640;
 const long int PPM_Frame_Length_ns = 20000000;
 const long int PPM_Frame_Length_ticks = 20000000 / 640;
 const long int PPM_No_Channels = NO_OFF_PPM_CHANNELS;
-float PPM_Channel_values[NO_OFF_PPM_CHANNELS] = { 0.5, 0.5, 0.5, 0.1, 0.9, 0.1,
-		0.9, 0.5 }; // Fill array with 0.5 - meaning 50 %
+float PPM_Channel_values[NO_OFF_PPM_CHANNELS] = { 0.4, 0.5, 0.55, 0.5, 0.5, 0.5,
+		0.5, 0.5 }; // Fill array with 0.5 - meaning 50 %
 const int long PPM_minimum_period_ns = 1000 * 1000; // Define minimum and maximum time between pulses
 const int long PPM_maximum_period_ns = 2000 * 1000;	// Each channel will be used to modulate between these
 const int long PPM_minimum_period_ticks = (1000 * 1000) / 640;// Define minimum and maximum time between pulses
 const int long PPM_maximum_period_ticks = (2000 * 1000) / 640;// Each channel will be used to modulate between these
+
+// Stuff for PPM input capture
+long int PPM_input_count[NO_OFF_PPM_CHANNELS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // Function prototypes
 void
@@ -70,6 +74,7 @@ GetKeyEvents(void);
 // the wrong function gets called on reset.
 int main(void) {
 	unsigned long ulLoop;
+	char buffer[32];
 
 	initHW();
 
@@ -77,7 +82,7 @@ int main(void) {
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-	RIT128x96x4StringDraw("Doing PPM...", 0, 10, mainFULL_SCALE);
+	RIT128x96x4StringDraw("Doing PPM...", 50, 0, mainFULL_SCALE);
 
 	//
 	// Loop forever.
@@ -89,13 +94,18 @@ int main(void) {
 		//
 		// Delay for a bit.
 		// This is BAD STYLE (tm) any embedded system should be either free-running or timer based
-		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
+		for (ulLoop = 0; ulLoop < 900000; ulLoop++) {
 		}
 
+		for (ulLoop = 0; ulLoop < 8; ulLoop++) {
+			RIT128x96x4StringDraw("               ", 50, 10*ulLoop, mainFULL_SCALE);
+			itoa(PPM_input_count[ulLoop], buffer, 10);
+			RIT128x96x4StringDraw(buffer, 50, 10*ulLoop, mainFULL_SCALE);
+		}
 		//
 		// Delay for a bit.
 		//
-		for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
+		for (ulLoop = 0; ulLoop < 900000; ulLoop++) {
 		}
 	}
 
@@ -213,20 +223,19 @@ void initTimer_Capture() {
 	//
 	// Set the count time (TimerA).
 	//
-	TimerLoadSet(TIMER0_BASE, TIMER_A, 3000);
-
+	//TimerLoadSet(TIMER0_BASE, TIMER_A, 60000);
 
 	//
 	// Configure the counter (TimerB) to count both edges.
 	//
-	TimerControlEvent(TIMER0_BASE, TIMER_A, TIMER_EVENT_BOTH_EDGES);
+	TimerControlEvent(TIMER0_BASE, TIMER_A, TIMER_EVENT_NEG_EDGE);
 	//
 	// Enable the timer.
 	//
 	TimerEnable(TIMER0_BASE, TIMER_A);
 
 	// Set up interrupt for Timer capture
-	TimerIntEnable(TIMER0_BASE, TIMER_CAPA_EVENT);
+	TimerIntEnable(TIMER0_BASE, TIMER_CAPA_EVENT | TIMER_TIMA_TIMEOUT);
 	IntEnable(INT_TIMER0A);
 
 }
@@ -348,7 +357,20 @@ void TIMER_0_IntHandler(void) {
 	volatile long int ulLoop;
 
 	long int thisInterrupt = 0;
+
+	enum PPM_POSITIONS {
+		PPMSTART, PPMCHANNEL1, PPMCHANNEL2, PPMCHANNEL3, PPMCHANNEL4, PPMCHANNEL5, PPMCHANNEL6, PPMCHANNEL7, PPMCHANNEL8, PPMMAXPOS
+	};
+	static long int ppmPosition = PPMSTART;
 	static long int lastCount = 0;
+	static long int timeOutCount = 0;
+	long int thisCount = 0;
+	long int deltaCount = 0;
+
+	//
+	// Turn on the LED.
+	//
+	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
 
 	//
 	// Clear the PWM interrupt.
@@ -359,11 +381,41 @@ void TIMER_0_IntHandler(void) {
 
 		TimerIntClear(TIMER0_BASE, TIMER_CAPA_EVENT);
 
-		//
-		// Turn on the LED.
-		//
-		GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, GPIO_PIN_0);
+		thisCount = TimerValueGet(TIMER0_BASE, TIMER_A);
+		deltaCount = lastCount-thisCount;
+		lastCount = thisCount;
 
+		switch (ppmPosition) {
+		case PPMSTART:
+			if (timeOutCount >= 7) {
+				ppmPosition = PPMCHANNEL1;
+			}
+			timeOutCount = 0;
+			break;
+		case PPMCHANNEL1:
+		case PPMCHANNEL2:
+		case PPMCHANNEL3:
+		case PPMCHANNEL4:
+		case PPMCHANNEL5:
+		case PPMCHANNEL6:
+		case PPMCHANNEL7:
+		//case PPMCHANNEL8:
+
+			// PPM_input_count = deltaCount;
+			PPM_input_count[ppmPosition-1] = timeOutCount * 0xffff - (deltaCount );
+			ppmPosition++;
+			timeOutCount = 0;
+			break;
+		case PPMCHANNEL8:
+			ppmPosition = PPMSTART;
+			break;
+		}
+	}
+
+	if (thisInterrupt & TIMER_TIMA_TIMEOUT) {
+		TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+
+		timeOutCount++;
 	}
 
 	for (ulLoop = 0; ulLoop < 6; ulLoop++)
