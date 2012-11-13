@@ -25,6 +25,7 @@
 // project includes
 #include "rit128x96x4.h"
 #include "../externalFunctions/itoa.h"
+#include "../signals/signals.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -81,7 +82,6 @@ int main(void) {
 		// This is BAD STYLE (tm) any embedded system should be either free-running or timer based
 		for (ulLoop = 0; ulLoop < 900000; ulLoop++) {
 		}
-
 
 		//
 		// Delay for a bit.
@@ -336,18 +336,22 @@ void TIMER_0_IntHandler(void) {
 
 		TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-		// This code should go in a function of its own
-		// to separate DSP code from interrupt handling
-		outputValue += 0.1;
-		if (outputValue > .9) {
-			outputValue = 0.1;
+		// Actual signal processing is done in the "signals" module
+		outputValue = calcNextOutputValue();
+
+		// Limit the output, just in case the calcNextOutputValue has errors
+		if (outputValue > 1) {
+			outputValue = 1.0;
+		}
+		if (outputValue < 0) {
+			outputValue = 0.0;
 		}
 
 		//
 		// Set the pulse width of PWM2
 		//
 		PWMDuty = PWM_pulsewidth_10Khz * outputValue;
-		PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWMDuty );
+		PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWMDuty);
 
 	}
 
