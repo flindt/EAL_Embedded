@@ -5,8 +5,9 @@
  *      Author: flindt
  */
 
+#include "sineWave/sinewave.h"
 
 float calcNextOutputValue(){
 
-	return 0;
+	return sine(0.001);
 }
