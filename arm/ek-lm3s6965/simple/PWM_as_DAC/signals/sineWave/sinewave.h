@@ -8,7 +8,9 @@
 #ifndef SINEWAVE_H_
 #define SINEWAVE_H_
 
-float sine(float faseStep);
+#include <IQmath/IQmathLib.h>
+
+_iq sine(float faseStep);
 
 
 #endif /* SINEWAVE_H_ */

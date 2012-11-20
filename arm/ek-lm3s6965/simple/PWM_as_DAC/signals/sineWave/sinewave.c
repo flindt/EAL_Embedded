@@ -13,14 +13,14 @@
 // Do not start from 0 phase
 #define START_PHASE 0.1
 
-_iq sine( float phaseStep) {
+_iq sine( _iq phaseStep) {
 	static _iq currentPhase = _IQ( START_PHASE );
 	_iq output;
 
-	currentPhase += 50000;
+	currentPhase += phaseStep;
 
 	output = _IQsin( currentPhase );
-	return _IQtoF(output);
+	return output;
 }
 
 _iq phaseStep( int frequency, int samplerate)
@@ -29,8 +29,6 @@ _iq phaseStep( int frequency, int samplerate)
 
 	output = _IQ( frequency*6.28/samplerate);
 
-	output = _IQ( 0.33 );
-
-	return output;
+	return 50000;
 }
 

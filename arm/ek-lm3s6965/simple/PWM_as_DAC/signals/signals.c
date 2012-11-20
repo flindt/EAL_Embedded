@@ -12,7 +12,8 @@
 float calcNextOutputValue(){
 	_iq output;
 
-	output = sine(0.1);
+	output = sine( phaseStep(10,100));
 
-	return _IQdiv2( output ) + _IQ( 0.5 );
+	//return output;
+	return _IQtoF( _IQdiv2( output ) + _IQ( 0.5 ) );
 }
