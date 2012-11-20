@@ -43,9 +43,11 @@
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.c.linker.debug.289538873" name="ARM Sourcery Linux GCC C Linker" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.c.linker.debug">
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths.1149100311" name="Library search path (-L)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="${STELLARISWARE_ROOT}/driverlib/gcc-cm3"/>
+									<listOptionValue builtIn="false" value="/home/flindt/install/stellaris/stellarisware/IQmath/sourcerygxx-cm3"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs.911045398" name="Libraries (-l)" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="driver-cm3"/>
+									<listOptionValue builtIn="false" value="IQmathLib-cm3"/>
 								</option>
 								<option id="org.eclipse.cdt.cross.arm.gnu.c.link.option.ldflags.1121325857" name="Linker flags (-Xlinker [option])" superClass="org.eclipse.cdt.cross.arm.gnu.c.link.option.ldflags" valueType="stringList">
 									<listOptionValue builtIn="false" value="-T&quot;../src/standalone.ld&quot;"/>
@@ -62,6 +64,10 @@
 							<tool id="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.printsize.debug.1442532796" name="ARM Sourcery Linux GNU Print Size" superClass="org.eclipse.cdt.cross.arm.gnu.sourcery.linux.elf.printsize.debug"/>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="signals" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="signals"/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

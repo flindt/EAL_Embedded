@@ -24,7 +24,9 @@
 
 // project includes
 #include "rit128x96x4.h"
+#include "settings.h"
 #include "../externalFunctions/itoa.h"
+#include "../signals/signals.h"
 
 /* Constants used when writing strings to the display. */
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -38,8 +40,9 @@
 const int KEY_PRESS_MINIMUM = 7;
 
 // Stuff for PWM control
-#define NO_OFF_PPM_CHANNELS 8
-const long int PWM_pulsewidth_ticks = 8000; //
+const long int PWM_pulsewidth_10Khz = 5000; 	//	PWM count for 10KHz. 50M / 5K = 10K (implies pwm clock divisor = 1)
+const long int TimerAFreq = SAMPLE_RATE;				//	Timer frequency -> translates into sampling rate in this program
+
 
 // Function prototypes
 void
@@ -61,7 +64,6 @@ GetKeyEvents(void);
 // the wrong function gets called on reset.
 int main(void) {
 	unsigned long ulLoop;
-	char buffer[32];
 
 	initHW();
 
@@ -83,7 +85,6 @@ int main(void) {
 		// This is BAD STYLE (tm) any embedded system should be either free-running or timer based
 		for (ulLoop = 0; ulLoop < 900000; ulLoop++) {
 		}
-
 
 		//
 		// Delay for a bit.
@@ -150,8 +151,8 @@ void initPWM2_with_int() {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	// Set the PWM clock for 6.25 MHz
-	SysCtlPWMClockSet(SYSCTL_PWMDIV_32);
+	// Set the PWM clock
+	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
 
 	GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
 	//
@@ -163,11 +164,11 @@ void initPWM2_with_int() {
 	//
 	// Set the period.
 	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, SysCtlClockGet() / 10000);
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, PWM_pulsewidth_10Khz);
 	//
 	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, SysCtlClockGet() / 100000);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_10Khz / 2);	// start at 50%
 
 	//
 	// Start the timers in generator 1.
@@ -206,7 +207,7 @@ void initTimer1_SampleClock() {
 	//
 	// Set the count time (TimerA).
 	//
-	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / 100);
+	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TimerAFreq);
 
 	//
 	// Configure the counter (TimerB) to count both edges.
@@ -338,19 +339,22 @@ void TIMER_0_IntHandler(void) {
 
 		TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-		// This code should go in a function of its own
-		// to separate DSP code from interrupt handling
-		outputValue += 0.1;
+		// Actual signal processing is done in the "signals" module
+		outputValue = calcNextOutputValue();
+
+		// Limit the output, just in case the calcNextOutputValue has errors
 		if (outputValue > 1) {
-			outputValue = 0.1;
+			outputValue = 1.0;
+		}
+		if (outputValue < 0) {
+			outputValue = 0.0;
 		}
 
 		//
 		// Set the pulse width of PWM2
 		//
-		PWMDuty = (SysCtlClockGet() / 10000) * outputValue;
-		PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWMDuty );
-				//PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, SysCtlClockGet() / 20000 );
+		PWMDuty = PWM_pulsewidth_10Khz * outputValue;
+		PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWMDuty);
 
 	}
 
