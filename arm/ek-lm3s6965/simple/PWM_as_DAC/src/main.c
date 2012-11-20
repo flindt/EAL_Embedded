@@ -24,6 +24,7 @@
 
 // project includes
 #include "rit128x96x4.h"
+#include "settings.h"
 #include "../externalFunctions/itoa.h"
 #include "../signals/signals.h"
 
@@ -39,7 +40,9 @@
 const int KEY_PRESS_MINIMUM = 7;
 
 // Stuff for PWM control
-const long int PWM_pulsewidth_10Khz = 5000; //
+const long int PWM_pulsewidth_10Khz = 5000; 	//	PWM count for 10KHz. 50M / 5K = 10K (implies pwm clock divisor = 1)
+const long int TimerAFreq = SAMPLE_RATE;				//	Timer frequency -> translates into sampling rate in this program
+
 
 // Function prototypes
 void
@@ -148,7 +151,7 @@ void initPWM2_with_int() {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_PWM);
-	// Set the PWM clock for 6.25 MHz
+	// Set the PWM clock
 	SysCtlPWMClockSet(SYSCTL_PWMDIV_1);
 
 	GPIOPinTypePWM(GPIO_PORTB_BASE, GPIO_PIN_0);
@@ -165,7 +168,7 @@ void initPWM2_with_int() {
 	//
 	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_10Khz / 10);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_10Khz / 2);	// start at 50%
 
 	//
 	// Start the timers in generator 1.
@@ -204,7 +207,7 @@ void initTimer1_SampleClock() {
 	//
 	// Set the count time (TimerA).
 	//
-	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / 100);
+	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / TimerAFreq);
 
 	//
 	// Configure the counter (TimerB) to count both edges.

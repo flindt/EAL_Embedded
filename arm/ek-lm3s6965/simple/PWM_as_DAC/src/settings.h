@@ -11,6 +11,6 @@
 #ifndef SETTINGS_H_
 #define SETTINGS_H_
 
-	const int SAMPLE_RATE = 100; // Hz
+#define SAMPLE_RATE  100
 
 #endif /* SETTINGS_H_ */
