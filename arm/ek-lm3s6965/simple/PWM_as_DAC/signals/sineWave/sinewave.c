@@ -22,3 +22,15 @@ _iq sine( float phaseStep) {
 	output = _IQsin( currentPhase );
 	return _IQtoF(output);
 }
+
+_iq phaseStep( int frequency, int samplerate)
+{
+	_iq output;
+
+	output = _IQ( frequency*6.28/samplerate);
+
+	output = _IQ( 0.33 );
+
+	return output;
+}
+

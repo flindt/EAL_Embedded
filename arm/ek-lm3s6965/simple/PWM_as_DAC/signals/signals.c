@@ -7,6 +7,7 @@
 
 #include <IQmath/IQmathLib.h>
 #include "sineWave/sinewave.h"
+#include "../src/settings.h"
 
 float calcNextOutputValue(){
 	_iq output;
