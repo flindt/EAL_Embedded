@@ -39,20 +39,7 @@ const int KEY_PRESS_MINIMUM = 7;
 
 // Stuff for PWM control
 #define NO_OFF_PPM_CHANNELS 8
-const long int PWM_pulsewidth_ticks = 400000 / 640;
-const long int PWM_ns_per_tick = 640;
-const long int PPM_Frame_Length_ns = 20000000;
-const long int PPM_Frame_Length_ticks = 20000000 / 640;
-const long int PPM_No_Channels = NO_OFF_PPM_CHANNELS;
-float PPM_Channel_values[NO_OFF_PPM_CHANNELS] = { 0.4, 0.5, 0.55, 0.5, 0.5, 0.5,
-		0.5, 0.5 }; // Fill array with 0.5 - meaning 50 %
-const int long PPM_minimum_period_ns = 1000 * 1000; // Define minimum and maximum time between pulses
-const int long PPM_maximum_period_ns = 2000 * 1000;	// Each channel will be used to modulate between these
-const int long PPM_minimum_period_ticks = (1000 * 1000) / 640;// Define minimum and maximum time between pulses
-const int long PPM_maximum_period_ticks = (2000 * 1000) / 640;// Each channel will be used to modulate between these
-
-// Stuff for PPM input capture
-long int PPM_input_count[NO_OFF_PPM_CHANNELS] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+const long int PWM_pulsewidth_ticks = 8000; //
 
 // Function prototypes
 void
@@ -82,7 +69,7 @@ int main(void) {
 
 	RIT128x96x4Init(ulSSI_FREQUENCY);
 	RIT128x96x4StringDraw("Hi :)", 0, 0, mainFULL_SCALE);
-	RIT128x96x4StringDraw("Doing PPM...", 50, 0, mainFULL_SCALE);
+	RIT128x96x4StringDraw("Doing PWM...", 50, 0, mainFULL_SCALE);
 
 	//
 	// Loop forever.
@@ -97,11 +84,7 @@ int main(void) {
 		for (ulLoop = 0; ulLoop < 900000; ulLoop++) {
 		}
 
-		for (ulLoop = 0; ulLoop < 8; ulLoop++) {
-			RIT128x96x4StringDraw("               ", 50, 10*ulLoop, mainFULL_SCALE);
-			itoa(PPM_input_count[ulLoop], buffer, 10);
-			RIT128x96x4StringDraw(buffer, 50, 10*ulLoop, mainFULL_SCALE);
-		}
+
 		//
 		// Delay for a bit.
 		//
@@ -158,7 +141,7 @@ int ReadKeys(void) {
 	return KeyBits;
 }
 
-void initPWM_PPM() {
+void initPWM2_with_int() {
 	///
 	/// Set up PWM2 / PB0
 	/// Period: 2.4ms	Ton: 0.4ms
@@ -180,11 +163,11 @@ void initPWM_PPM() {
 	//
 	// Set the period.
 	//
-	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, 200);
+	PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, SysCtlClockGet() / 10000);
 	//
 	// Set the pulse width of PWM2
 	//
-	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, 15);
+	PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, SysCtlClockGet() / 100000);
 
 	//
 	// Start the timers in generator 1.
@@ -192,9 +175,9 @@ void initPWM_PPM() {
 	PWMGenEnable(PWM_BASE, PWM_GEN_1);
 	//
 	// Enable the output.
-	// Invert it to match Trainer input
+	//
 	PWMOutputState(PWM_BASE, PWM_OUT_2_BIT, true);
-	PWMOutputInvert(PWM_BASE, PWM_OUT_2_BIT, true);
+	// PWMOutputInvert(PWM_BASE, PWM_OUT_2_BIT, true);
 
 	// Set up interrupt for PWM load
 	PWMGenIntTrigEnable(PWM_BASE, PWM_GEN_1,
@@ -204,7 +187,7 @@ void initPWM_PPM() {
 
 }
 
-void initTimer_Capture() {
+void initTimer1_SampleClock() {
 	///
 	/// Set up CCP0 / PD4 as Timer 0 Capture input
 	///
@@ -213,9 +196,9 @@ void initTimer_Capture() {
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
 
 	//
-	// Configure timer 0 as capture.
+	// Configure timer 0.
 	//
-	TimerConfigure(TIMER0_BASE, TIMER_CFG_16_BIT_PAIR | TIMER_CFG_A_CAP_TIME);
+	TimerConfigure(TIMER0_BASE, TIMER_CFG_32_BIT_PER);
 
 	// Set output type of pin PD4
 	GPIOPinTypeTimer(GPIO_PORTD_BASE, GPIO_PIN_4);
@@ -223,12 +206,13 @@ void initTimer_Capture() {
 	//
 	// Set the count time (TimerA).
 	//
-	//TimerLoadSet(TIMER0_BASE, TIMER_A, 60000);
+	TimerLoadSet(TIMER0_BASE, TIMER_A, SysCtlClockGet() / 100);
 
 	//
 	// Configure the counter (TimerB) to count both edges.
 	//
-	TimerControlEvent(TIMER0_BASE, TIMER_A, TIMER_EVENT_NEG_EDGE);
+	// TimerControlEvent(TIMER0_BASE, TIMER_A, TIMER_EVENT_NEG_EDGE);
+
 	//
 	// Enable the timer.
 	//
@@ -280,9 +264,9 @@ void initHW(void) {
 			GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_0, 1);
 
-	initPWM_PPM();
+	initPWM2_with_int();
 
-	initTimer_Capture();
+	initTimer1_SampleClock();
 
 	// a short delay to ensure stable IO before running the rest of the program
 	for (ulLoop = 0; ulLoop < 20; ulLoop++) {
@@ -301,51 +285,24 @@ void initHW(void) {
 //*****************************************************************************
 void PWM_1_IntHandler(void) {
 	volatile long int ulLoop;
-	static int i = 0;
-	static long int TotalCount = 0;
 
-	long int countThisChannel;
 	long int thisInterrupt = 0;
 
 	//
 	// Clear the PWM interrupt.
-	// For now we only check 1 interrupt source, as it is the only one enabled
+	//
 
 	thisInterrupt = PWMGenIntStatus(PWM_BASE, PWM_GEN_1, true);
+
+	// Each interrupt can have different causes
 	if (thisInterrupt & PWM_INT_CNT_ZERO) {
 
-		// This interrupt is just here to show how to use more than
-		// one interrupt source for the same interrupt vector
 		PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_ZERO);
 
 	}
 	if (thisInterrupt & PWM_INT_CNT_LOAD) {
 
 		PWMGenIntClear(PWM_BASE, PWM_GEN_1, PWM_INT_CNT_LOAD);
-
-		if (i == PPM_No_Channels) {
-			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1,
-					PPM_Frame_Length_ticks - TotalCount);
-			//
-			// Set the pulse width of PWM2
-			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_ticks);
-			i = 0;
-			TotalCount = 0;
-		} else {
-			countThisChannel = PPM_minimum_period_ticks
-					+ PPM_Channel_values[i]
-							* (PPM_maximum_period_ticks
-									- PPM_minimum_period_ticks);
-			//countThisChannel = 1200;
-			PWMGenPeriodSet(PWM_BASE, PWM_GEN_1, countThisChannel);
-			//
-			// Set the pulse width of PWM2
-			//
-			PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWM_pulsewidth_ticks);
-			TotalCount += countThisChannel;
-			i++;
-		}
 
 	}
 
@@ -356,16 +313,10 @@ void PWM_1_IntHandler(void) {
 void TIMER_0_IntHandler(void) {
 	volatile long int ulLoop;
 
-	long int thisInterrupt = 0;
+	static float outputValue = 0.1;
+	int PWMDuty;
 
-	enum PPM_POSITIONS {
-		PPMSTART, PPMCHANNEL1, PPMCHANNEL2, PPMCHANNEL3, PPMCHANNEL4, PPMCHANNEL5, PPMCHANNEL6, PPMCHANNEL7, PPMCHANNEL8, PPMMAXPOS
-	};
-	static long int ppmPosition = PPMSTART;
-	static long int lastCount = 0;
-	static long int timeOutCount = 0;
-	long int thisCount = 0;
-	long int deltaCount = 0;
+	long int thisInterrupt = 0;
 
 	//
 	// Turn on the LED.
@@ -381,41 +332,26 @@ void TIMER_0_IntHandler(void) {
 
 		TimerIntClear(TIMER0_BASE, TIMER_CAPA_EVENT);
 
-		thisCount = TimerValueGet(TIMER0_BASE, TIMER_A);
-		deltaCount = lastCount-thisCount;
-		lastCount = thisCount;
-
-		switch (ppmPosition) {
-		case PPMSTART:
-			if (timeOutCount >= 7) {
-				ppmPosition = PPMCHANNEL1;
-			}
-			timeOutCount = 0;
-			break;
-		case PPMCHANNEL1:
-		case PPMCHANNEL2:
-		case PPMCHANNEL3:
-		case PPMCHANNEL4:
-		case PPMCHANNEL5:
-		case PPMCHANNEL6:
-		case PPMCHANNEL7:
-		//case PPMCHANNEL8:
-
-			// PPM_input_count = deltaCount;
-			PPM_input_count[ppmPosition-1] = timeOutCount * 0xffff - (deltaCount );
-			ppmPosition++;
-			timeOutCount = 0;
-			break;
-		case PPMCHANNEL8:
-			ppmPosition = PPMSTART;
-			break;
-		}
 	}
 
 	if (thisInterrupt & TIMER_TIMA_TIMEOUT) {
+
 		TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
 
-		timeOutCount++;
+		// This code should go in a function of its own
+		// to separate DSP code from interrupt handling
+		outputValue += 0.1;
+		if (outputValue > 1) {
+			outputValue = 0.1;
+		}
+
+		//
+		// Set the pulse width of PWM2
+		//
+		PWMDuty = (SysCtlClockGet() / 10000) * outputValue;
+		PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, PWMDuty );
+				//PWMPulseWidthSet(PWM_BASE, PWM_OUT_2, SysCtlClockGet() / 20000 );
+
 	}
 
 	for (ulLoop = 0; ulLoop < 6; ulLoop++)
