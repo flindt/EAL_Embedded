@@ -5,9 +5,13 @@
  *      Author: flindt
  */
 
+#include <IQmath/IQmathLib.h>
 #include "sineWave/sinewave.h"
 
 float calcNextOutputValue(){
+	_iq output;
 
-	return sine(0.001);
+	output = sine(0.1);
+
+	return _IQdiv2( output ) + _IQ( 0.5 );
 }

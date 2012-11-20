@@ -10,13 +10,14 @@
 
 #include <IQmath/IQmathLib.h>
 
+// Do not start from 0 phase
+#define START_PHASE 0.1
 
-float sine( float phaseStep) {
-	static _iq currentPhase = 0.01;
+_iq sine( float phaseStep) {
+	static _iq currentPhase = _IQ( START_PHASE );
 	_iq output;
 
 	currentPhase += 50000;
-//if ( currentPhase > 2 * 3.14)  currentPhase = currentPhase-2*3.14;
 
 	output = _IQsin( currentPhase );
 	return _IQtoF(output);
