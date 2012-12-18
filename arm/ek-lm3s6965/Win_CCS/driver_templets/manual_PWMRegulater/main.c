@@ -85,9 +85,8 @@ int main(void)
 		// event = GetKeyEvents();
 
 		statemashine(GetKeyEvents());
-		F_PWM(valuereturn);
 		//all functions the
-
+		F_PWM(valuereturn);
 	}
 }
 

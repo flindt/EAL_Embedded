@@ -53,7 +53,7 @@ int TS_State = UPSTARTMENU;
  */
 int statemashine( int event )
 {
-	volatile static char ulLoop = 0;
+
 
 	static float T1set = 0;
 	static float T2set = 0;
@@ -126,6 +126,7 @@ int statemashine( int event )
 			if(valuereturn == T1set)
 				{
 					valuereturn = T2set;
+
 					RIT128x96x4StringDraw("T2on     ",					25,	86, mainFULL_SCALE);
 					Rpct = T2set *100;
 					itoa(Rpct, buffer, 10);
@@ -134,6 +135,7 @@ int statemashine( int event )
 				else
 				{
 					valuereturn = T1set;
+
 					RIT128x96x4StringDraw("T1on     ",					25,	86, mainFULL_SCALE);
 					Rpct = T1set *100;
 					itoa(Rpct, buffer, 10);
@@ -285,7 +287,7 @@ int statemashine( int event )
         TS_State = NextState;
     }
 
-    SetParams( TS_State, T1set,T2set, event);//!what the state mashine every time it run ture the program
+    DoDisplay( TS_State, T1set,T2set, event);//!what the state mashine every time it run ture the program
 
 return TS_State;
 }
@@ -342,7 +344,7 @@ void OnExit( int State)
 }
 
 
-void SetParams( int State,float tempvalue1,float tempvalue2, int button)
+void DoDisplay( int State,float tempvalue1,float tempvalue2, int button)
 {
 	switch (State)// to show menu display at start i set it here
 		{
@@ -351,6 +353,7 @@ void SetParams( int State,float tempvalue1,float tempvalue2, int button)
 				RIT128x96x4StringDraw(" PWM Duty Control",	2,	49, mainFULL_SCALE);
 				RIT128x96x4StringDraw("PWM settings",		2,	57, mainFULL_SCALE);
 				break;
+
 		}
 	switch (button)//!line 311 to 334 to see want button is pressed in all menus they are set here
 		{

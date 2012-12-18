@@ -11,7 +11,7 @@
 enum states { UPSTARTMENU, LED, TEMP, SNIVEAU, FNIVEAU, MAXSTATES };
 
 // forward function declarations
-void SetParams( int State,float tempvalue1, float tempvalue2, int button );
+void DoDisplay( int State,float tempvalue1, float tempvalue2, int button );
 void OnEnter( int State);
 void OnExit( int State);
 int statemashine(int event);
