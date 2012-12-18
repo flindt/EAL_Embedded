@@ -69,7 +69,7 @@ GetKeyEvents(void);
 int
 main(void)
 {
-  unsigned long ulLoop, ulValue;
+ volatile unsigned long ulLoop, ulValue;
   char buffer[32] = "";
 
   initHW();
@@ -116,9 +116,7 @@ main(void)
       //
       // Delay for a bit.
       // This is BAD STYLE (tm) any embedded system should be either free-running or timer based
-      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-        {
-        }
+      SysCtlDelay(80000);
 
       //
       // Turn off the LED.
@@ -128,9 +126,7 @@ main(void)
       //
       // Delay for a bit.
       //
-      for (ulLoop = 0; ulLoop < 200000; ulLoop++)
-        {
-        }
+
     }
 
   return 0;
