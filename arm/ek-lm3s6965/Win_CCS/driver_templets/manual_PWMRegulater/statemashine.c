@@ -125,21 +125,17 @@ int statemashine( int event )
 		case KEY0_EVENT_SELECT:
 			if(valuereturn == T1set)
 				{
+				RIT128x96x4StringDraw("T2on     ",		25,	86, mainFULL_SCALE);
 					valuereturn = T2set;
-
-					RIT128x96x4StringDraw("T2on     ",					25,	86, mainFULL_SCALE);
 					Rpct = T2set *100;
 					itoa(Rpct, buffer, 10);
-					RIT128x96x4StringDraw(buffer, 						55,	86, mainFULL_SCALE);
 				}
 				else
 				{
+				RIT128x96x4StringDraw("T1on     ",		25,	86, mainFULL_SCALE);
 					valuereturn = T1set;
-
-					RIT128x96x4StringDraw("T1on     ",					25,	86, mainFULL_SCALE);
 					Rpct = T1set *100;
 					itoa(Rpct, buffer, 10);
-					RIT128x96x4StringDraw(buffer, 						55,	86, mainFULL_SCALE);
 				}
 			break;
 
@@ -169,11 +165,11 @@ int statemashine( int event )
 	case FNIVEAU:
 		Rpct = setvalue *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
+		RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
 
-		Rpct = T2set *100;
+		Rpct = T1set *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
+		RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
 		switch (event)
 		{
 		case KEY0_EVENT_SELECT:
@@ -182,26 +178,19 @@ int statemashine( int event )
 		case KEY1_EVENT_UP:
 			setvalue = SETSTEP + setvalue;
 			itoa(setvalue, buffer, 10);
-			if(setvalue >= 1)
-				{
-				setvalue = 0.99;
-				}
 			Rpct = setvalue *100;
 
 			break;
 
 		case KEY2_EVENT_DOWN:
-			if(T2set != 0||setvalue !=0)
-			{
 				setvalue = setvalue - SETSTEP;
 				itoa(setvalue, buffer, 10);
 				Rpct = (setvalue * 100);
-			}
 			break;
 
 		case KEY3_EVENT_ENTER:
-			T2set = setvalue;
-			Rpct = (T2set  * 100);
+			T1set = setvalue;
+			Rpct = (T1set  * 100);
 			itoa(Rpct, buffer, 10);
 			break;
 
@@ -215,14 +204,13 @@ int statemashine( int event )
 		break;
 
 	case SNIVEAU:
-		RIT128x96x4StringDraw("set     ",					0,	77, mainFULL_SCALE);
 		Rpct = setvalue *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
-		RIT128x96x4StringDraw("on     ",					0,	86, mainFULL_SCALE);
-		Rpct = T1set *100;
+		RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
+
+		Rpct = T2set *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
+		RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
 		switch (event)
 		{
 		case KEY0_EVENT_SELECT:
@@ -230,27 +218,20 @@ int statemashine( int event )
 
 		case KEY1_EVENT_UP:
 			setvalue = SETSTEP + setvalue;
-			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
 			Rpct = setvalue *100;
 			itoa(setvalue, buffer, 10);
-			RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
-
 			break;
 
 		case KEY2_EVENT_DOWN:
 			setvalue = setvalue - SETSTEP;
-			RIT128x96x4StringDraw("set     ",			0,	77, mainFULL_SCALE);
 			Rpct = (setvalue * 100);
 			itoa(setvalue, buffer, 10);
-			RIT128x96x4StringDraw(buffer,				25, 77, mainFULL_SCALE);
 			break;
 
 		case KEY3_EVENT_ENTER:
-			T1set = setvalue;
-			Rpct = (T1set  * 100);
-			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
+			T2set = setvalue;
+			Rpct = (T2set  * 100);
 			itoa(Rpct, buffer, 10);
-			RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
 			break;
 
 		case KEY4_EVENT_CANCEL:
@@ -280,7 +261,7 @@ int statemashine( int event )
         TS_State = NextState;
     }
 
-    DoDisplay( TS_State, T1set,T2set, event);//!what the state mashine every time it run ture the program
+    DoDisplay( TS_State, event);//!what the state mashine every time it run ture the program
 
 return TS_State;
 }
@@ -295,36 +276,6 @@ return TS_State;
 void OnEnter( int State)
 {
 	RIT128x96x4Clear();
-	switch (State)
-		{
-
-			case LED:
-				RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
-				RIT128x96x4StringDraw("LED off ", 				2,	57, mainFULL_SCALE);
-				break;
-			case TEMP:
-				RIT128x96x4StringDraw("1th level", 			2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw(" Duty settings ", 		2,	49, mainFULL_SCALE);
-				RIT128x96x4StringDraw("2nd level", 		2,	57, mainFULL_SCALE);
-				RIT128x96x4StringDraw("Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
-				break;
-			case SNIVEAU:
-				RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw(" 1th Niveau ", 		2,	49, mainFULL_SCALE);
-				RIT128x96x4StringDraw("down 10pct", 		2,	57, mainFULL_SCALE);
-				RIT128x96x4StringDraw("Cancel", 	2,	65, mainFULL_SCALE);
-				break;
-			case FNIVEAU:
-				RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw(" 2nd Niveau ", 		2,	49, mainFULL_SCALE);
-				RIT128x96x4StringDraw("down 10pct", 		2,	57, mainFULL_SCALE);
-				RIT128x96x4StringDraw("Cancel",			2,	65, mainFULL_SCALE);
-				break;
-			default:
-				break;
-			// The program should never get here !
-		}
 }
 
 void OnExit( int State)
@@ -333,37 +284,81 @@ void OnExit( int State)
 }
 
 
-void DoDisplay( int State,float tempvalue1,float tempvalue2, int button)
+void DoDisplay( int State, int button)
 {
 	switch (State)// to show menu display at start i set it here
 		{
 		case UPSTARTMENU:
-			RIT128x96x4StringDraw("LED test",					2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" PWM Duty Control",			2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("PWM settings",				2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("LED test",				2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" PWM Duty Control",		2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw("PWM settings",			2,	57, mainFULL_SCALE);
 			break;
-		case FNIVEAU:
-			RIT128x96x4StringDraw("set     ",					0,	77, mainFULL_SCALE);
-			RIT128x96x4StringDraw("on     ",					0,	86, mainFULL_SCALE);
-		switch (button)
+		case LED:
+			RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw("LED off ", 				2,	57, mainFULL_SCALE);
+			break;
+		case TEMP:
+			RIT128x96x4StringDraw("1th level", 				2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" Duty settings ", 		2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw("2nd level", 				2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
+			switch (button)
 			{
-			case KEY1_EVENT_UP:
-				RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
-				RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
-				break;
-
-			case KEY2_EVENT_DOWN:
-				RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
-				RIT128x96x4StringDraw(buffer,					25, 77, mainFULL_SCALE);
-				break;
-
-			case KEY3_EVENT_ENTER:
-				RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
-				RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
-				break;
-			default:
+			case KEY0_EVENT_SELECT:
+				RIT128x96x4StringDraw(buffer, 				55,	86, mainFULL_SCALE);
 				break;
 			}
+			break;
+		case FNIVEAU:
+			RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" 1th Niveau ", 			2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw("down 10pct", 			2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("Cancel",					2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
+			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
+			switch (button)
+				{
+				case KEY1_EVENT_UP:
+					RIT128x96x4StringDraw("set     ",		0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,			25,	77, mainFULL_SCALE);
+					break;
+
+				case KEY2_EVENT_DOWN:
+					RIT128x96x4StringDraw("set     ",		0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,			25, 77, mainFULL_SCALE);
+					break;
+
+				case KEY3_EVENT_ENTER:
+					RIT128x96x4StringDraw("on     ",		0,	86, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer, 			25,	86, mainFULL_SCALE);
+					break;
+				}
+			break;
+		case SNIVEAU:
+			RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" 2nd Niveau ", 			2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw("down 10pct", 			2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("Cancel", 				2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
+			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
+			switch (button)
+				{
+				case KEY1_EVENT_UP:
+					RIT128x96x4StringDraw("set     ",	0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,				25,	77, mainFULL_SCALE);
+					break;
+
+				case KEY2_EVENT_DOWN:
+					RIT128x96x4StringDraw("set     ",			0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,				25, 77, mainFULL_SCALE);
+					break;
+
+				case KEY3_EVENT_ENTER:
+					RIT128x96x4StringDraw("on     ",			0,	86, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer, 				25,	86, mainFULL_SCALE);
+					break;
+				}
 			break;
 		default:
 			break;
