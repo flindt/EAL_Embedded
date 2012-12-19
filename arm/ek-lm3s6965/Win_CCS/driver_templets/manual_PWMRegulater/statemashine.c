@@ -47,7 +47,8 @@
 //! State definitions
 //! Line 48 is where to set where in the Menu its starts up when you power up the statemashine
 int TS_State = UPSTARTMENU;
-
+char Rpct = 0;
+char buffer[32];
 /* The SM does not know anything about the system. This way it can be tested on a
  * different C compiler very easily.
  */
@@ -58,10 +59,9 @@ int statemashine( int event )
 	static float T1set = 0;
 	static float T2set = 0;
 	static float setvalue = 0;
-	static char Rpct = 0;
+
     int NextState = TS_State;
 
-	char buffer[32];
 	//!there is 5 buttons to use in this statemashine its @param KEY?_EVENT_?
 	//! and under them is what happen if you push it... every case end on break;
 	switch( TS_State )
@@ -167,11 +167,10 @@ int statemashine( int event )
 		break;
 
 	case FNIVEAU:
-		RIT128x96x4StringDraw("set     ",					0,	77, mainFULL_SCALE);
 		Rpct = setvalue *100;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
-		RIT128x96x4StringDraw("on     ",					0,	86, mainFULL_SCALE);
+
 		Rpct = T2set *100;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
@@ -182,14 +181,12 @@ int statemashine( int event )
 
 		case KEY1_EVENT_UP:
 			setvalue = SETSTEP + setvalue;
+			itoa(setvalue, buffer, 10);
 			if(setvalue >= 1)
 				{
 				setvalue = 0.99;
 				}
-			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
 			Rpct = setvalue *100;
-			itoa(setvalue, buffer, 10);
-			RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
 
 			break;
 
@@ -197,19 +194,15 @@ int statemashine( int event )
 			if(T2set != 0||setvalue !=0)
 			{
 				setvalue = setvalue - SETSTEP;
-				RIT128x96x4StringDraw("set     ",			0,	77, mainFULL_SCALE);
+				itoa(setvalue, buffer, 10);
 				Rpct = (setvalue * 100);
-				itoa(Rpct, buffer, 10);
-				RIT128x96x4StringDraw(buffer,				25, 77, mainFULL_SCALE);
 			}
 			break;
 
 		case KEY3_EVENT_ENTER:
 			T2set = setvalue;
 			Rpct = (T2set  * 100);
-			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
 			itoa(Rpct, buffer, 10);
-			RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
 			break;
 
 		case KEY4_EVENT_CANCEL:
@@ -304,11 +297,7 @@ void OnEnter( int State)
 	RIT128x96x4Clear();
 	switch (State)
 		{
-			case UPSTARTMENU:
-				RIT128x96x4StringDraw("LED test",			2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw(" PWM Duty Control",	2,	49, mainFULL_SCALE);
-				RIT128x96x4StringDraw("PWM settings",		2,	57, mainFULL_SCALE);
-				break;
+
 			case LED:
 				RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
 				RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
@@ -348,12 +337,37 @@ void DoDisplay( int State,float tempvalue1,float tempvalue2, int button)
 {
 	switch (State)// to show menu display at start i set it here
 		{
-			case UPSTARTMENU:
-				RIT128x96x4StringDraw("LED test",			2,	41, mainFULL_SCALE);
-				RIT128x96x4StringDraw(" PWM Duty Control",	2,	49, mainFULL_SCALE);
-				RIT128x96x4StringDraw("PWM settings",		2,	57, mainFULL_SCALE);
+		case UPSTARTMENU:
+			RIT128x96x4StringDraw("LED test",					2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" PWM Duty Control",			2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw("PWM settings",				2,	57, mainFULL_SCALE);
+			break;
+		case FNIVEAU:
+			RIT128x96x4StringDraw("set     ",					0,	77, mainFULL_SCALE);
+			RIT128x96x4StringDraw("on     ",					0,	86, mainFULL_SCALE);
+		switch (button)
+			{
+			case KEY1_EVENT_UP:
+				RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
+				RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
 				break;
 
+			case KEY2_EVENT_DOWN:
+				RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
+				RIT128x96x4StringDraw(buffer,					25, 77, mainFULL_SCALE);
+				break;
+
+			case KEY3_EVENT_ENTER:
+				RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
+				RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
+				break;
+			default:
+				break;
+			}
+			break;
+		default:
+			break;
+			// The program should never get here
 		}
 	switch (button)//!line 311 to 334 to see want button is pressed in all menus they are set here
 		{

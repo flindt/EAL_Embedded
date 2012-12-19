@@ -78,15 +78,13 @@ int main(void)
 	//
 	while (1)
 	{
-		// This is where a statemachine could be added
-
 		// Statmashine function
 		// This is where a statemachine could be added
 		// event = GetKeyEvents();
-
 		statemashine(GetKeyEvents());
+
 		//all functions the
-		F_PWM(valuereturn);
+		F_PWM(valuereturn);// calling the value a globel and the value is set in the statemashine
 	}
 }
 
