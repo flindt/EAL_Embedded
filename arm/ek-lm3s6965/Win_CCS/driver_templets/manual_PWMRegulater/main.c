@@ -84,7 +84,7 @@ int main(void)
 		statemashine(GetKeyEvents());
 
 		//all functions the
-		F_PWM(valuereturn);// calling the value a globel and the value is set in the statemashine
+		F_PWM(valuereturn);// @parma valuereturn is a globel value set in F_PWM.h and the value is set in the statemashine
 	}
 }
 
@@ -103,7 +103,6 @@ void initHW(void)
 	// PE1 : Down button
 	// PE2 : Left button
 	// PE3 : Right button
-	//
 	GPIODirModeSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_DIR_MODE_IN);
 	GPIOPadConfigSet(GPIO_PORTE_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
 	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_1, GPIO_DIR_MODE_IN);
@@ -117,7 +116,8 @@ void initHW(void)
 	GPIODirModeSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_DIR_MODE_OUT);
 	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, 0);//! 0 is off set to GPIO_PIN_2 |GPIO_PIN_3 to make on
-	F_PWM_init();//! Hardware set up for motor control over pwm start up
+
+	F_PWM_init();//! Hardware set up for PWM start up
 
   // a short delay to ensure stable IO before running the rest of the program
 	for (ulLoop = 0; ulLoop < 200000; ulLoop++) {

@@ -56,7 +56,7 @@ int statemashine( int event )
 {
 
 
-	static float T1set = 0;
+	static float T1set = 1;
 	static float T2set = 0;
 	static float setvalue = 0;
 
@@ -125,14 +125,14 @@ int statemashine( int event )
 		case KEY0_EVENT_SELECT:
 			if(valuereturn == T1set)
 				{
-				RIT128x96x4StringDraw("T2on     ",		25,	86, mainFULL_SCALE);
+				RIT128x96x4StringDraw("T2on     ",			25,	86, mainFULL_SCALE);
 					valuereturn = T2set;
 					Rpct = T2set *100;
 					itoa(Rpct, buffer, 10);
 				}
 				else
 				{
-				RIT128x96x4StringDraw("T1on     ",		25,	86, mainFULL_SCALE);
+				RIT128x96x4StringDraw("T1on     ",			25,	86, mainFULL_SCALE);
 					valuereturn = T1set;
 					Rpct = T1set *100;
 					itoa(Rpct, buffer, 10);
@@ -165,12 +165,12 @@ int statemashine( int event )
 	case FNIVEAU:
 		Rpct = setvalue *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
+		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
 
 		Rpct = T1set *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
-		switch (event)
+		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
+	switch (event)
 		{
 		case KEY0_EVENT_SELECT:
 			break;
@@ -206,12 +206,12 @@ int statemashine( int event )
 	case SNIVEAU:
 		Rpct = setvalue *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer,					25,	77, mainFULL_SCALE);
+		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
 
 		Rpct = T2set *100;
 		itoa(Rpct, buffer, 10);
-		RIT128x96x4StringDraw(buffer, 					25,	86, mainFULL_SCALE);
-		switch (event)
+		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
+	switch (event)
 		{
 		case KEY0_EVENT_SELECT:
 			break;
@@ -289,20 +289,21 @@ void DoDisplay( int State, int button)
 	switch (State)// to show menu display at start i set it here
 		{
 		case UPSTARTMENU:
-			RIT128x96x4StringDraw("LED test",				2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw("LED Test",				2,	41, mainFULL_SCALE);
 			RIT128x96x4StringDraw(" PWM Duty Control",		2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("PWM settings",			2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("PWM Settings",			2,	57, mainFULL_SCALE);
 			break;
 		case LED:
 			RIT128x96x4StringDraw("LED on  ",				2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel to Menu",			2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" LED Test",				2,	49, mainFULL_SCALE);
 			RIT128x96x4StringDraw("LED off ", 				2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" Cancel to Menu",			2,	65, mainFULL_SCALE);
 			break;
 		case TEMP:
 			RIT128x96x4StringDraw("1th level", 				2,	41, mainFULL_SCALE);
-			RIT128x96x4StringDraw(" Duty settings ", 		2,	49, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" Duty Settings ", 		2,	49, mainFULL_SCALE);
 			RIT128x96x4StringDraw("2nd level", 				2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw(" Cancel to StartMenu", 	2,	65, mainFULL_SCALE);
 			switch (button)
 			{
 			case KEY0_EVENT_SELECT:
@@ -311,10 +312,10 @@ void DoDisplay( int State, int button)
 			}
 			break;
 		case FNIVEAU:
-			RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw("up   1pct", 			2,	41, mainFULL_SCALE);
 			RIT128x96x4StringDraw(" 1th Niveau ", 			2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("down 10pct", 			2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel",					2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw("down 1pct", 			2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("	Back = Cancel",					2,	65, mainFULL_SCALE);
 			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
 			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
 			switch (button)
@@ -336,27 +337,27 @@ void DoDisplay( int State, int button)
 				}
 			break;
 		case SNIVEAU:
-			RIT128x96x4StringDraw("up 	10pct", 			2,	41, mainFULL_SCALE);
+			RIT128x96x4StringDraw("up   1pct", 			2,	41, mainFULL_SCALE);
 			RIT128x96x4StringDraw(" 2nd Niveau ", 			2,	49, mainFULL_SCALE);
-			RIT128x96x4StringDraw("down 10pct", 			2,	57, mainFULL_SCALE);
-			RIT128x96x4StringDraw("Cancel", 				2,	65, mainFULL_SCALE);
+			RIT128x96x4StringDraw("down 1pct", 			2,	57, mainFULL_SCALE);
+			RIT128x96x4StringDraw("	Back = Cancel", 				2,	65, mainFULL_SCALE);
 			RIT128x96x4StringDraw("set     ",				0,	77, mainFULL_SCALE);
 			RIT128x96x4StringDraw("on     ",				0,	86, mainFULL_SCALE);
 			switch (button)
 				{
 				case KEY1_EVENT_UP:
-					RIT128x96x4StringDraw("set     ",	0,	77, mainFULL_SCALE);
-					RIT128x96x4StringDraw(buffer,				25,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw("set     ",		0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,			25,	77, mainFULL_SCALE);
 					break;
 
 				case KEY2_EVENT_DOWN:
-					RIT128x96x4StringDraw("set     ",			0,	77, mainFULL_SCALE);
-					RIT128x96x4StringDraw(buffer,				25, 77, mainFULL_SCALE);
+					RIT128x96x4StringDraw("set     ",		0,	77, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer,			25, 77, mainFULL_SCALE);
 					break;
 
 				case KEY3_EVENT_ENTER:
-					RIT128x96x4StringDraw("on     ",			0,	86, mainFULL_SCALE);
-					RIT128x96x4StringDraw(buffer, 				25,	86, mainFULL_SCALE);
+					RIT128x96x4StringDraw("on     ",		0,	86, mainFULL_SCALE);
+					RIT128x96x4StringDraw(buffer, 			25,	86, mainFULL_SCALE);
 					break;
 				}
 			break;
@@ -364,7 +365,7 @@ void DoDisplay( int State, int button)
 			break;
 			// The program should never get here
 		}
-	switch (button)//!line 311 to 334 to see want button is pressed in all menus they are set here
+	switch (button)//!to see want button is pressed in all menus they are set here(debug)
 		{
 		case KEY0_EVENT_SELECT:
 			RIT128x96x4StringDraw("Select Pressed",			0,	0, mainFULL_SCALE);
