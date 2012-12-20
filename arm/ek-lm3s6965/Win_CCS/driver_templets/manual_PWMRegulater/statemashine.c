@@ -56,7 +56,7 @@ int statemashine( int event )
 {
 
 
-	static float T1set = 1;
+	static float T1set = 0.01;
 	static float T2set = 0;
 	static float setvalue = 0;
 
