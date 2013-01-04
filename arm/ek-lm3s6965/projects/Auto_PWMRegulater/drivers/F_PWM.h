@@ -8,7 +8,7 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 //globel
-extern float valuereturn;
+extern double valuereturn;
 
 //
 void F_PWM_init(void);

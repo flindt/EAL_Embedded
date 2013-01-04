@@ -52,7 +52,7 @@ void initADC()
 int setADC (void)
 	{
 	unsigned long ulValue;
-	char buffer[32] = "";
+	//char buffer[32] = "";
 	  //
 	  // Trigger the sample sequence.
 	  //
@@ -69,9 +69,10 @@ int setADC (void)
 	  //
 	  ADCSequenceDataGet(ADC0_BASE, 0, &ulValue);
 
-	  RIT128x96x4StringDraw("     ", 50, 50, mainFULL_SCALE);
+	  /*debug show value
+	  RIT128x96x4StringDraw("     ", 90, 88, mainFULL_SCALE);
 	  itoa(ulValue, buffer, 10 );
-	  RIT128x96x4StringDraw(buffer, 50, 50, mainFULL_SCALE);
-
+	  RIT128x96x4StringDraw(buffer, 90, 88, mainFULL_SCALE);
+	  */
     return ulValue;
 	}

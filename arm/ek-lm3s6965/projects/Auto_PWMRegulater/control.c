@@ -10,7 +10,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "statemashine.h"
+#include "drivers/setADC.h"
+
 double u,e,v,y;
+/*
+	K 	Loop gain parameter
+	Ti 	Integrator time constant
+	Td  Differentiator time constant
+ */
 double K,Ti,Td,Beta,Tr,N,h;
 double ad, bd;
 double D,I,yOld;
@@ -20,7 +28,7 @@ double D,I,yOld;
 //
 // yref = user set goal
 // newY = measured value
-// h = sample time. time between to samples
+// h = sample time. time between to samples..Update time interval
 //
 
 void updateParameters(double nK, double nTi, double nTd, double nBeta, double nTr, double nN, double nh)

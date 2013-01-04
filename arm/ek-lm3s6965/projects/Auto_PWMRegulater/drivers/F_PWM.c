@@ -28,7 +28,7 @@
 #define PWMperiedset 1000
 //globel
 volatile unsigned long ulPeriod;
-float valuereturn = 0;
+double valuereturn = 0;
 //! This example application utilizes the PWM peripheral to output a 25% duty
 //! cycle PWM signal and a 75% duty cycle PWM signal, both at 440 Hz.  Once
 //! configured, the application enters an infinite loop, doing nothing while
