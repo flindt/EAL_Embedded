@@ -32,7 +32,15 @@ static void NmiSR(void);
 static void FaultISR(void);
 static void IntDefaultHandler(void);
 
+//*****************************************************************************
+//
+// External declarations for the interrupt handlers used by the application.
+//
+//*****************************************************************************
+extern void EthernetIntHandler(void);
+extern void SysTickIntHandler(void);
 extern void CANIntHandler(void);
+
 //*****************************************************************************
 //
 // External declaration for the reset handler that is to be called when the
