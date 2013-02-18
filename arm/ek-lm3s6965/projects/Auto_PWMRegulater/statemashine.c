@@ -28,6 +28,7 @@
 #include "drivers/rit128x96x4.h"
 
 #include "drivers/F_PWM.h"
+#include "drivers/setADC.h"
 
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -47,15 +48,13 @@
 //! State definitions
 //! Line 48 is where to set where in the Menu its starts up when you power up the statemashine
 int TS_State = UPSTARTMENU;
-char Rpct = 0;
+int Rpct = 0;
 char buffer[32];
 /* The SM does not know anything about the system. This way it can be tested on a
  * different C compiler very easily.
  */
 int statemashine( int event )
 {
-
-
 	static float T1set = 0.01;
 	static float T2set = 0;
 	static float setvalue = 0;
@@ -127,14 +126,14 @@ int statemashine( int event )
 				{
 				RIT128x96x4StringDraw("T2on     ",			25,	86, mainFULL_SCALE);
 					valuereturn = T2set;
-					Rpct = T2set *100;
+					Rpct = T2set *1000;
 					itoa(Rpct, buffer, 10);
 				}
 				else
 				{
 				RIT128x96x4StringDraw("T1on     ",			25,	86, mainFULL_SCALE);
 					valuereturn = T1set;
-					Rpct = T1set *100;
+					Rpct = T1set *1000;
 					itoa(Rpct, buffer, 10);
 				}
 			break;
@@ -142,16 +141,17 @@ int statemashine( int event )
 		case KEY1_EVENT_UP:
 			NextState = FNIVEAU;
 			setvalue = 0;
-			Rpct = (T1set  * 100);
+			Rpct = (T1set  * 1000);
 			break;
 
 		case KEY2_EVENT_DOWN:
 			NextState = SNIVEAU;
 			setvalue = 0;
-			Rpct = (T2set  * 100);
+			Rpct = (T2set  * 1000);
 			break;
 
 		case KEY3_EVENT_ENTER:
+			NextState = DEGREE;
 			break;
 
 		case KEY4_EVENT_CANCEL:
@@ -163,11 +163,11 @@ int statemashine( int event )
 		break;
 
 	case FNIVEAU:
-		Rpct = setvalue *100;
+		Rpct = setvalue *1000;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
 
-		Rpct = T1set *100;
+		Rpct = T1set *1000;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
 	switch (event)
@@ -178,19 +178,18 @@ int statemashine( int event )
 		case KEY1_EVENT_UP:
 			setvalue = SETSTEP + setvalue;
 			itoa(setvalue, buffer, 10);
-			Rpct = setvalue *100;
-
+			Rpct = setvalue *1000;
 			break;
 
 		case KEY2_EVENT_DOWN:
 				setvalue = setvalue - SETSTEP;
 				itoa(setvalue, buffer, 10);
-				Rpct = (setvalue * 100);
+				Rpct = (setvalue * 1000);
 			break;
 
 		case KEY3_EVENT_ENTER:
 			T1set = setvalue;
-			Rpct = (T1set  * 100);
+			Rpct = (T1set  * 1000);
 			itoa(Rpct, buffer, 10);
 			break;
 
@@ -204,11 +203,11 @@ int statemashine( int event )
 		break;
 
 	case SNIVEAU:
-		Rpct = setvalue *100;
+		Rpct = setvalue *1000;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer,						25,	77, mainFULL_SCALE);
 
-		Rpct = T2set *100;
+		Rpct = T2set *1000;
 		itoa(Rpct, buffer, 10);
 		RIT128x96x4StringDraw(buffer, 						25,	86, mainFULL_SCALE);
 	switch (event)
@@ -218,25 +217,48 @@ int statemashine( int event )
 
 		case KEY1_EVENT_UP:
 			setvalue = SETSTEP + setvalue;
-			Rpct = setvalue *100;
+			Rpct = setvalue *1000;
 			itoa(setvalue, buffer, 10);
 			break;
 
 		case KEY2_EVENT_DOWN:
 			setvalue = setvalue - SETSTEP;
-			Rpct = (setvalue * 100);
+			Rpct = (setvalue * 1000);
 			itoa(setvalue, buffer, 10);
 			break;
 
 		case KEY3_EVENT_ENTER:
 			T2set = setvalue;
-			Rpct = (T2set  * 100);
+			Rpct = (T2set  * 1000);
 			itoa(Rpct, buffer, 10);
 			break;
 
 		case KEY4_EVENT_CANCEL:
 			NextState = TEMP;
 			setvalue = 0;
+			break;
+		default:
+			break;
+		}
+		break;
+
+	case DEGREE:
+		switch (event)
+		{
+		case KEY0_EVENT_SELECT:
+			break;
+
+		case KEY1_EVENT_UP:
+			break;
+
+		case KEY2_EVENT_DOWN:
+			break;
+
+		case KEY3_EVENT_ENTER:
+			break;
+
+		case KEY4_EVENT_CANCEL:
+			NextState = TEMP;
 			break;
 		default:
 			break;
@@ -282,7 +304,6 @@ void OnExit( int State)
 {
 
 }
-
 
 void DoDisplay( int State, int button)
 {
@@ -360,6 +381,11 @@ void DoDisplay( int State, int button)
 					RIT128x96x4StringDraw(buffer, 			25,	86, mainFULL_SCALE);
 					break;
 				}
+			break;
+			case DEGREE:
+				RIT128x96x4StringDraw(" DEGREE ", 			2,	49, mainFULL_SCALE);
+				setADC();
+
 			break;
 		default:
 			break;

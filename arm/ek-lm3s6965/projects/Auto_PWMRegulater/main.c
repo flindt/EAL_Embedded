@@ -13,22 +13,21 @@
  Description : H_bridge control in C, Ansi-style
  ============================================================================
  */
+//stallaris includes
 #include <string.h>
 #include <stdio.h>
-
-#include "readkeys/readkeys.h"
-#include "statemashine.h"
-
 #include "drivers/rit128x96x4.h"
-
-#include "drivers/F_PWM.h"
-
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_sysctl.h"
-
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
+
+//include
+#include "readkeys/readkeys.h"
+#include "statemashine.h"
+#include "drivers/F_PWM.h"
+#include "drivers/setADC.h"
 
 //!Setting up the Display
 #define mainCHARACTER_HEIGHT				( 9 )
@@ -52,6 +51,7 @@ int main(void)
 {
 	volatile unsigned long ulLoop;
 	volatile int event;
+	static double resPWMcal =0;
 	//Hardware upstarts
 	initHW();
 
@@ -84,7 +84,9 @@ int main(void)
 		statemashine(GetKeyEvents());
 
 		//all functions the
-		F_PWM(valuereturn);// @parma valuereturn is a globel value set in F_PWM.h and the value is set in the statemashine
+		calculateOutput(valuereturn,setADC());
+
+		F_PWM(resPWMcal);// @parma valuereturn is a globel value set in F_PWM.h and the value is set in the statemashine
 	}
 }
 
@@ -117,7 +119,8 @@ void initHW(void)
 	GPIOPadConfigSet(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD);
 	GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_2 |GPIO_PIN_3, 0);//! 0 is off set to GPIO_PIN_2 |GPIO_PIN_3 to make on
 
-	F_PWM_init();//! Hardware set up for PWM start up
+	initADC();		//! Hardware set up for ADC start up
+	F_PWM_init();	//! Hardware set up for PWM start up
 
   // a short delay to ensure stable IO before running the rest of the program
 	for (ulLoop = 0; ulLoop < 200000; ulLoop++) {
