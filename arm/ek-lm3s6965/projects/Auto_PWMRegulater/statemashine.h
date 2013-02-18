@@ -8,7 +8,7 @@
 #ifndef STATEMASHINE_H_
 #define STATEMASHINE_H_
 //! This is the @param enum of the states are so need a state more here is to make it
-enum states { UPSTARTMENU, LED, TEMP, SNIVEAU, FNIVEAU, MAXSTATES };
+enum states { UPSTARTMENU, LED, TEMP, SNIVEAU, FNIVEAU, DEGREE, MAXSTATES };
 
 // forward function declarations
 void DoDisplay( int State, int button );
