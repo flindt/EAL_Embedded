@@ -1,5 +1,6 @@
 XCC     = arm-none-eabi-gcc
 LD      = arm-none-eabi-ld
+OD		= arm-none-eabi-objcopy
 CFLAGS  = -mthumb             \
        -mcpu=cortex-m3     \
        -Os                 \
@@ -14,7 +15,7 @@ CFLAGS  = -mthumb             \
 LDFLAGS =   --gc-sections -Map tryBuzzer.map -T standalone.ld -N \
 	-L/shared/toolchains/SW-EK-LM3S6965/driverlib/gcc-cm3/ -ldriver-cm3
 
-all: tryBuzzer.elf
+all: tryBuzzer.elf tryBuzzer.bin
 
 rit128x96x4.o: rit128x96x4.c rit128x96x4.h
 	$(XCC) $(CFLAGS) rit128x96x4.c
@@ -27,6 +28,9 @@ main.o: main.c
 
 tryBuzzer.elf: main.o startup.o rit128x96x4.o standalone.ld
 	$(LD) -o $@ main.o startup.o rit128x96x4.o $(LDFLAGS)
+	
+tryBuzzer.bin: tryBuzzer.elf
+	$(OD) tryBuzzer.elf tryBuzzer.bin
 
 clean:
 	-rm -f tryBuzzer.elf *.o tryBuzzer.map
