@@ -5,6 +5,7 @@ SET(CMAKE_SYSTEM_VERSION 1)
 
 # specify the cross compiler
 CMAKE_FORCE_C_COMPILER(arm-none-eabi-gcc GNU)
+CMAKE_FORCE_CXX_COMPILER(arm-none-eabi-g++ GNU)
 SET(CMAKE_C_LINKER arm-none-eabi-ld)
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
@@ -27,7 +28,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-gc-sections \
 	
 function(arm_firmware INPUT)
               add_custom_command(TARGET ${INPUT}
-                      COMMAND arm-none-eabi-objcopy -O binary ${INPUT} ${INPUT}.bin
+                      COMMAND arm-none-eabi-objcopy ${INPUT} ${INPUT}.bin
                       COMMENT "objcopying to make arm compatible firmware")
               set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${INPUT}.bin)
 endfunction(make_mbed_firmware)
