@@ -24,3 +24,10 @@ SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-gc-sections \
 	-L/shared/toolchains/SW-EK-LM3S6965/driverlib/gcc-cm3/ \
 	-ldriver-cm3\
 	-T /home/flindt/git/EAL_Embedded/arm/ek-lm3s6965/standalone.ld")
+	
+function(arm_firmware INPUT)
+              add_custom_command(TARGET ${INPUT}
+                      COMMAND arm-none-eabi-objcopy -O binary ${INPUT} ${INPUT}.bin
+                      COMMENT "objcopying to make arm compatible firmware")
+              set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${INPUT}.bin)
+endfunction(make_mbed_firmware)
