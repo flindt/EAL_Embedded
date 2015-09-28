@@ -17,13 +17,12 @@ SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
 
 SET(COMMON_FLAGS "-mcpu=cortex-m3 -mthumb -mthumb-interwork \
 	-ffunction-sections -fdata-sections \
-	-Wall -pedantic -Os\
+	-Wall -pedantic -g -Os\
 	-DPART_LM3S6965")
 SET(CMAKE_CXX_FLAGS "${COMMON_FLAGS}  -std=gnu++0x")
 SET(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu99")
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-gc-sections \
 	-L/shared/toolchains/SW-EK-LM3S6965/driverlib/gcc-cm3/ \
-	-ldriver-cm3\
 	-T /home/flindt/git/EAL_Embedded/arm/ek-lm3s6965/standalone.ld")
 	
 function(arm_firmware INPUT)
