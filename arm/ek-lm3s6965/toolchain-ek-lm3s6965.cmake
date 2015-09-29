@@ -30,4 +30,4 @@ function(arm_firmware INPUT)
                       COMMAND arm-none-eabi-objcopy ${INPUT} ${INPUT}.bin
                       COMMENT "objcopying to make arm compatible firmware")
               set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${INPUT}.bin)
-endfunction(make_mbed_firmware)
+endfunction(arm_firmware)

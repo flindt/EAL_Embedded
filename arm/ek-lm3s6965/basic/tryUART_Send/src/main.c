@@ -96,6 +96,7 @@ main(void)
 
       }
 
+      UARTCharNonBlockingPut(UART0_BASE, 'c');
 
       //
       // Delay for a bit.

@@ -1,2 +1,8 @@
-
+add_subdirectory(tryADC)
 add_subdirectory(tryBuzzer)
+add_subdirectory(tryI2C_master_slave)
+add_subdirectory(tryOLED)
+add_subdirectory(trySysTickTimer)
+add_subdirectory(tryTimers)
+add_subdirectory(tryUART)
+add_subdirectory(tryUART_Send)

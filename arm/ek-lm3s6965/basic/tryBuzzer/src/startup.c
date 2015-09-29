@@ -215,7 +215,6 @@ FaultISR(void)
     //
     while(1)
     {
-    	SysCtlReset();
     }
 }
 
