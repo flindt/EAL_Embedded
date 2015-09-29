@@ -1,9 +1,4 @@
 
-include_directories( ./ ) 
+add_executable(tryBuzzer main.c startup.c rit128x96x4.c)
+target_link_libraries(tryBuzzer driver-cm3 )
 
-add_library(startup STATIC startup.c)
-add_library(rit128x96x4 STATIC rit128x96x4.c)
-
-
-add_executable(tryBuzzer main.c)
-target_link_libraries(tryBuzzer libstartup librit128x96x4) 

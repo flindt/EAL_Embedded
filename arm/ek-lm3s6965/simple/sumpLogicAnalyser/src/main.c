@@ -18,7 +18,6 @@
 
 // project includes
 #include "rit128x96x4.h"
-#include "../externalFunctions/itoa.h"
 
 
 /* Constants used when writing strings to the display. */
@@ -31,9 +30,6 @@
 
 // Stuff for the Key interface
 const int KEY_PRESS_MINIMUM = 7;
-
-// Buffer handling
-const int maxBuffer = 32;
 
 // Function prototypes
 void
@@ -58,9 +54,6 @@ int
 main(void)
 {
   unsigned long ulLoop;
-  unsigned long ulBufferPos=0;
-  char buffer[maxBuffer];
-
 
   initHW();
 
@@ -84,19 +77,11 @@ main(void)
 
 
       //
-      // Check if data is available on UART and read one char
+      // Put a character in the output buffer.
       //
-      if (UARTCharsAvail(UART0_BASE)) {
-    	  buffer[ulBufferPos] = UARTCharGetNonBlocking(UART0_BASE);
-    	  buffer[ulBufferPos+1] = 0;
-      	  RIT128x96x4StringDraw(buffer,0,20,mainFULL_SCALE);
+      UARTCharPut(UART0_BASE, 'c');
 
-      	  ulBufferPos ++;
-      	  if (ulBufferPos >= maxBuffer) ulBufferPos = 0;
 
-      }
-
-      UARTCharNonBlockingPut(UART0_BASE, 'c');
 
       //
       // Delay for a bit.
